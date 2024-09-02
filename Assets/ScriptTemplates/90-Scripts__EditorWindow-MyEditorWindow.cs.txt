@@ -1,0 +1,43 @@
+#if UNITY_EDITOR
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEditor;
+
+namespace BSA
+{
+	public class #SCRIPTNAME# : EditorWindow
+	{
+		[MenuItem("Schock Absorbers/#SCRIPTNAME#")]
+		static void CreateWindow()
+		{
+			GetWindow<#SCRIPTNAME#>();
+		}
+
+		// --- Fields -------------------------------------------------------------------------------------------------
+
+		// --- Properties ---------------------------------------------------------------------------------------------
+
+		// --- Events -------------------------------------------------------------------------------------------------
+
+		// --- Unity Functions ----------------------------------------------------------------------------------------
+		private void OnEnable()
+		{
+			
+		}
+
+		private void OnGUI()
+		{
+		
+		}
+
+		// --- Public/Internal Methods --------------------------------------------------------------------------------		
+
+		// --- Protected/Private Methods ------------------------------------------------------------------------------
+		
+		// ----------------------------------------------------------------------------------------
+	}
+}
+#endif

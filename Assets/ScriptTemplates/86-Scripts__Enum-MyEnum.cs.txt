@@ -1,0 +1,7 @@
+namespace BSA
+{
+	public enum #SCRIPTNAME#
+	{
+		
+	}
+}
