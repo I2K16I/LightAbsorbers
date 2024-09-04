@@ -27,11 +27,17 @@ namespace BSA
             float rngRotation = Random.Range(0f, 360f);
             transform.Rotate(0f, rngRotation, 0f);
             _moveDirection = transform.forward;
+            IsPaused = true;
 
         }
 
         private void FixedUpdate()
         {
+            if (IsPaused)
+            {
+                _rigidBody.velocity = Vector3.zero;
+                return;
+            }
             _moveDirection.y = 0f;
             //transform.position += _moveDirection * Time.fixedDeltaTime * _moveSpeed;
             _rigidBody.velocity = _moveDirection * _moveSpeed;
@@ -46,7 +52,7 @@ namespace BSA
 
             if (collision.gameObject.TryGetComponent(out PlayerMovement player))
             {
-                //Debug.Log($"Hit player {player.name}");
+                player.Hit();
                 isReflected = false;
             }
             //else if (rb != null)
@@ -81,6 +87,11 @@ namespace BSA
             IsPaused = false;
             _moveDirection = _directionBuffer;
             _directionBuffer = Vector3.zero;
+        }
+
+        public void StartOrbs()
+        {
+            IsPaused = false;
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------

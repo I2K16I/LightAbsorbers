@@ -15,6 +15,9 @@ namespace BSA
         [SerializeField] private int _SpawnCount = 8;
         [SerializeField] private float _spawnRadius = 1f;
 
+        private OrbMovement[] orbs;
+
+
 		// --- Properties ---------------------------------------------------------------------------------------------
 		
 		// --- Events -------------------------------------------------------------------------------------------------
@@ -22,6 +25,7 @@ namespace BSA
 		// --- Unity Functions ----------------------------------------------------------------------------------------
 		private void Awake()
 		{
+            orbs = new OrbMovement[_SpawnCount];
 			Vector3 spawnPosition = transform.position;
             Vector3 offset = Vector3.zero;
 
@@ -29,7 +33,7 @@ namespace BSA
             {
                 offset = new Vector3(Random.Range(-_spawnRadius, _spawnRadius), 0, Random.Range(-_spawnRadius, _spawnRadius));
                 spawnPosition += offset;
-                Instantiate(_prefab, spawnPosition, Quaternion.identity);
+                orbs[i] = Instantiate(_prefab, spawnPosition, Quaternion.identity).GetComponent<OrbMovement>();
                 spawnPosition = transform.position;
             }
 		}
@@ -48,9 +52,30 @@ namespace BSA
         // --- Event callbacks ----------------------------------------------------------------------------------------
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
-
+        public void StartOrbs()
+        {
+            for (int i = 0; i < orbs.Length; ++i)
+            {
+                orbs[i].StartOrbs();
+            }
+        }
+        public void EndGame()
+        {
+            for (int i = 0; i < orbs.Length; ++i)
+            {
+                orbs[i].PauseMovement();
+            }
+            StartCoroutine(DisableOrbsOverTime()); 
+        }
         // --- Protected/Private Methods ------------------------------------------------------------------------------
-
+        private IEnumerator DisableOrbsOverTime()
+        {
+            for (int i = 0; i < orbs.Length; ++i)
+            {
+                orbs[i].gameObject.SetActive(false);
+                yield return new WaitForSeconds(.5f);
+            }
+        }
         // ----------------------------------------------------------------------------------------
     }
 }
