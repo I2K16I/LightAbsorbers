@@ -16,6 +16,7 @@ namespace BSA
         [SerializeField] private float _moveSpeed = 1f;
         [SerializeField] private float _gravity = 1f;
         [SerializeField] private float _turnTime = .5f;
+        [SerializeField] private MeshRenderer _renderer;
 
         private Vector3 _moveDirection = Vector3.zero;
         private Vector3 _lookDirection = Vector3.zero;
@@ -31,6 +32,7 @@ namespace BSA
         //public CharacterController Controller3 => _controller;
         public bool IsReady { get; private set; } = false;
         public bool IsAlive { get; private set; } = true;
+        public int Id { get; set; }
 
         // --- Events -------------------------------------------------------------------------------------------------
 
@@ -95,7 +97,7 @@ namespace BSA
 
         public void OnReady(InputAction.CallbackContext context)
         {
-            if(GameManager.Instance.GameStarted == false && context.performed)
+            if(GameManager.Instance.GameRunning == false && context.performed)
             {
                 IsReady = true;
                 GameManager.Instance.CheckGameStart();
@@ -109,7 +111,7 @@ namespace BSA
                 if(IsReady)
                 {
                     IsReady = false;
-                } else if(GameManager.Instance.GameStarted == false)
+                } else if(GameManager.Instance.GameRunning == false)
                 {
                     Destroy(this.gameObject);
                 }
@@ -150,6 +152,10 @@ namespace BSA
             _lookDirection = new Vector3(0, 0, -1);
         }
 
+        public void ChangeMaterial(Material newMaterial)
+        {
+            _renderer.material = newMaterial;
+        }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private void AllowMovement()

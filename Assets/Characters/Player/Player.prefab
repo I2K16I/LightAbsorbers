@@ -162,6 +162,7 @@ MonoBehaviour:
   _moveSpeed: 14
   _gravity: 1
   _turnTime: 0.15
+  _renderer: {fileID: 1093596549889130792}
 --- !u!114 &6375391829320137021
 MonoBehaviour:
   m_ObjectHideFlags: 0
