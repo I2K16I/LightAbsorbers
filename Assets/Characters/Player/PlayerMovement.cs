@@ -32,7 +32,8 @@ namespace BSA
         //public CharacterController Controller3 => _controller;
         public bool IsReady { get; private set; } = false;
         public bool IsAlive { get; private set; } = true;
-        public int Id { get; set; }
+        public int MaterialId { get; set; }
+        public int PositionId { get; set; } 
 
         // --- Events -------------------------------------------------------------------------------------------------
 
@@ -100,7 +101,7 @@ namespace BSA
             if(GameManager.Instance.GameRunning == false && context.performed)
             {
                 IsReady = true;
-                GameManager.Instance.CheckGameStart();
+                GameManager.Instance.CheckGameStart(this);
             }
         }
     
@@ -111,6 +112,7 @@ namespace BSA
                 if(IsReady)
                 {
                     IsReady = false;
+                    GameManager.Instance.CheckGameStart(this);
                 } else if(GameManager.Instance.GameRunning == false)
                 {
                     Destroy(this.gameObject);

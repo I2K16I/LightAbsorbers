@@ -40,7 +40,7 @@ namespace BSA
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
 
-		public void SetNewPoision(Transform pointOne, Transform pointTwo)
+		public void SetNewProperties(Transform pointOne, Transform pointTwo, float lifetime)
 		{
             Vector3 pointOnePos = pointOne.position;
             Vector3 pointTwoPos = pointTwo.position;
@@ -53,14 +53,17 @@ namespace BSA
 
 			float targetScale = Vector3.Distance(pointOnePos, pointTwoPos);
 			StartCoroutine(ScaleUpRoutine(.5f, targetScale));
+			this.DoAfter(lifetime, DeleteSelf);
         }
 
-		public void ResetPosition()
+		public void DeleteSelf()
 		{
-            _container.position = _startPos;
-            _container.localScale = new Vector3(0.1f, 1, 0.1f);
-			_collider.enabled = false;
-			_indicator.material = _indicatorMaterial;
+   //         _container.position = _startPos;
+   //         _container.localScale = new Vector3(0.1f, 1, 0.1f);
+			//_collider.enabled = false;
+			//_indicator.material = _indicatorMaterial;
+			Destroy(gameObject);
+
         }
 		// --- Protected/Private Methods ------------------------------------------------------------------------------
 		private IEnumerator ScaleUpRoutine(float scaleDuration, float targetScale)

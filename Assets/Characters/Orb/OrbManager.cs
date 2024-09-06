@@ -14,10 +14,13 @@ namespace BSA
         [SerializeField] private GameObject _prefab;
         [SerializeField] private int _SpawnCount = 8;
         [SerializeField] private float _spawnRadius = 1f;
-        [SerializeField] private Transform[] _outerOrbs;
+        [SerializeField] private GameObject[] _outerOrbs;
         [SerializeField] private BeamManager[] _beams;
+        [SerializeField] private BeamSpawner _beamSpawner;
 
-        private OrbMovement[] orbs;
+        private List<OuterOrbs> _outerOrbScripts = new List<OuterOrbs>();
+        private List<int> attackList = new List<int>();
+        private OrbMovement[] _orbs;
 
 
 		// --- Properties ---------------------------------------------------------------------------------------------
@@ -27,7 +30,7 @@ namespace BSA
 		// --- Unity Functions ----------------------------------------------------------------------------------------
 		private void Awake()
 		{
-            orbs = new OrbMovement[_SpawnCount];
+            _orbs = new OrbMovement[_SpawnCount];
 			Vector3 spawnPosition = transform.position;
             Vector3 offset = Vector3.zero;
 
@@ -35,8 +38,13 @@ namespace BSA
             {
                 offset = new Vector3(Random.Range(-_spawnRadius, _spawnRadius), 0, Random.Range(-_spawnRadius, _spawnRadius));
                 spawnPosition += offset;
-                orbs[i] = Instantiate(_prefab, spawnPosition, Quaternion.identity).GetComponent<OrbMovement>();
+                _orbs[i] = Instantiate(_prefab, spawnPosition, Quaternion.identity).GetComponent<OrbMovement>();
                 spawnPosition = transform.position;
+            }
+
+            foreach(GameObject outerOrbObject in _outerOrbs)
+            {
+                _outerOrbScripts.Add(outerOrbObject.GetComponent<OuterOrbs>());
             }
         }
 
@@ -56,73 +64,131 @@ namespace BSA
         // --- Public/Internal Methods --------------------------------------------------------------------------------
         public void StartOrbs()
         {
-            for (int i = 0; i < orbs.Length; ++i)
+            for (int i = 0; i < _orbs.Length; ++i)
             {
-                orbs[i].StartOrbs();
+                _orbs[i].StartOrbs();
             }
         }
 
         public void OrbAttack(float duration)
         {
-            Transform orbOne;
+            int orbOne;
             OrbMovement orbTwo;
-            Transform orbThree;
+            int orbThree;
             int IndexOfMovingOrb;
 
+ 
             SelectOrbs(out orbOne, out orbTwo, out orbThree, out IndexOfMovingOrb);
-            orbs[IndexOfMovingOrb].PauseMovement();
 
-            _beams[0].SetNewPoision(orbOne, orbTwo.transform);
-            _beams[1].SetNewPoision(orbThree, orbTwo.transform);
+            _orbs[IndexOfMovingOrb].PauseMovement();
+            _outerOrbScripts[orbOne].IsAlreadyAttacking = true;
+            _outerOrbScripts[orbThree].IsAlreadyAttacking = true;
+            _outerOrbScripts[orbOne].AttackId = attackList.Count;
+            _outerOrbScripts[orbThree].AttackId = attackList.Count;
+            attackList.Add(attackList.Count);
+
+            //_beams[0].SetNewPoision(_outerOrbs[orbOne].transform, orbTwo.transform);
+            //_beams[1].SetNewPoision(_outerOrbs[orbThree].transform, orbTwo.transform);
+            _beamSpawner.SpawnBeamAt(_outerOrbs[orbOne].transform, orbTwo.transform, duration);
+            _beamSpawner.SpawnBeamAt(_outerOrbs[orbThree].transform, orbTwo.transform, duration);
 
             this.DoAfter(duration, () => EndOrbAttack(IndexOfMovingOrb));
-        }
+
+
+            }
+
         public void EndGame()
         {
-            for (int i = 0; i < orbs.Length; ++i)
+            for (int i = 0; i < _orbs.Length; ++i)
             {
-                orbs[i].PauseMovement();
+                _orbs[i].PauseMovement();
             }
             StartCoroutine(DisableOrbsOverTime()); 
         }
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private IEnumerator DisableOrbsOverTime()
         {
-            for (int i = 0; i < orbs.Length; ++i)
+            for (int i = 0; i < _orbs.Length; ++i)
             {
-                orbs[i].gameObject.SetActive(false);
+                _orbs[i].gameObject.SetActive(false);
                 yield return new WaitForSeconds(.5f);
             }
         }
 
-        private void SelectOrbs(out Transform orbOne, out OrbMovement orbTwo, out Transform orbThree, out int IndexOfMovingOrb)
+        private void SelectOrbs(out int orbOne, out OrbMovement orbTwo, out int orbThree, out int IndexOfMovingOrb)
         {
-            int numOne = 0;
-            int numTwo = 0;
-
+  
+            IndexOfMovingOrb = 0;
+            int outerOrbOne = 0;
+            int outerOrbTwo = 0;
             for(int i = 0; i < 1; i++)
             {
-                numOne = Random.Range(0, _outerOrbs.Length - 1);
-                numTwo = Random.Range(0, _outerOrbs.Length - 1);
-                if(numOne == numTwo)
+                outerOrbOne = Random.Range(0, _outerOrbs.Length - 1);
+                outerOrbTwo = Random.Range(0, _outerOrbs.Length - 1);
+                if(SameOrAdjacent(outerOrbOne, outerOrbTwo, _outerOrbs.Length-1))
                 {
                     i--;
                 }
-                
+                else if(_outerOrbScripts[outerOrbOne].IsAlreadyAttacking || _outerOrbScripts[outerOrbTwo].IsAlreadyAttacking)
+                {
+                    i--;
+                }
             }
-            IndexOfMovingOrb = Random.Range(0, orbs.Length - 1);
-            
-            orbOne = _outerOrbs[numOne];
-            orbTwo = orbs[IndexOfMovingOrb];
-            orbThree = _outerOrbs[numTwo];
+            for(int i = 0; i < 1; i++)
+            {
+                IndexOfMovingOrb = Random.Range(0, _orbs.Length - 1);
+                if(_orbs[IndexOfMovingOrb].IsPaused)
+                {
+                    i--;
+                }
+            }
+            _outerOrbScripts[outerOrbOne].IsAlreadyAttacking = true;
+            _outerOrbScripts[outerOrbTwo].IsAlreadyAttacking = true;
+            orbOne = outerOrbOne;
+            orbTwo = _orbs[IndexOfMovingOrb];
+            orbThree = outerOrbTwo;
             
         }
 
+        private bool SameOrAdjacent(int numOne, int numTwo, int maxLength)
+        {
+            bool isSameOrAdjacent = false;
+
+            if(numOne == numTwo)
+            {
+                isSameOrAdjacent = true;
+            } else if(numOne == numTwo +1) 
+            {
+                isSameOrAdjacent = true;
+            } else if (numOne == numTwo -1) 
+            {
+                isSameOrAdjacent = true;
+            } else if (numOne == 0 && numTwo == maxLength)
+            {
+                isSameOrAdjacent = true;
+            } else if (numOne == maxLength && numTwo == 0)
+            {
+                isSameOrAdjacent = true;
+            }
+
+            return isSameOrAdjacent;
+        }
         private void EndOrbAttack(int IndexOfStoppedOrb)
         {
-            orbs[IndexOfStoppedOrb].ResumeMovement();
-            _beams[0].ResetPosition();
-            _beams[1].ResetPosition();
+            _orbs[IndexOfStoppedOrb].ResumeMovement();
+            //_beams[0].ResetPosition();
+            //_beams[1].ResetPosition();
+            int attackToEnd = attackList.ElementAt(0);
+            for (int i = 0; i < _outerOrbs.Length; i++)
+            {
+                if(_outerOrbScripts[i].AttackId == attackToEnd)
+                {
+                    _outerOrbScripts[i].AttackId = -1;
+                    _outerOrbScripts[i].IsAlreadyAttacking = false;
+                }
+                
+            }
+            attackList.Remove(attackToEnd);
         }
         // ----------------------------------------------------------------------------------------
     }

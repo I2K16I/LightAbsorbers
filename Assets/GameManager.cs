@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace BSA
 {
@@ -16,7 +17,10 @@ namespace BSA
         [SerializeField] private float _attackDuration = 6f;
         [Tooltip("This value should be at least double of the attack duration. Lowest possible value shoule be the same as the attack duration.")]
         [SerializeField] private float _timeBetweenAttacks = 12f;
-        
+        [Tooltip("This value determins how fast the game starts after all Players are ready")]
+        [SerializeField] private float _startDelay = 1.5f;
+        [SerializeField] private float _transitionTime = 1f;
+        [SerializeField] private TransitionManager _transitionManager;
         [SerializeField] private CinemachineVirtualCamera _winningCamera;
         [SerializeField] private Vector3 _winningCameraOffset;
         [SerializeField] private float _timeBetweenReadyAndStart = 2f;
@@ -27,8 +31,14 @@ namespace BSA
         [SerializeField] private CinemachineVirtualCamera _gameCamera;
         [SerializeField] private Transform[] _spawnPointsGame;
         [SerializeField] private BannerManager _bannerManager;
+        [SerializeField] private StatusSpriteManager[] _statusSpriteManager;
+        [SerializeField] private Slider _countdownBar;
 
+        [SerializeField] private float _timeUntilFirstIcreaseOfAttacks = 20f;
+        [SerializeField] private float _timeUntilSecondIcreaseOfAttacks = 40f;
+        [SerializeField] private int _amountOfAttacks = 1;
         private readonly List<PlayerMovement> _players = new();
+        private Coroutine _startRoutineInsttance = null;
         
         // --- Properties ---------------------------------------------------------------------------------------------
         public static GameManager Instance { get; private set; }
@@ -72,6 +82,7 @@ namespace BSA
             _bannerManager.DeterminColor(movement, index);
             movement.transform.position = _spawnPointsJoin[index].position;
             _players.Add(movement);
+            _statusSpriteManager[index].UpdateReadyStatus(movement);
         }
 
         private void OnPlayerLeft(UnityEngine.InputSystem.PlayerInput player)
@@ -87,18 +98,25 @@ namespace BSA
             }
             else
             {
-                _bannerManager.ReleaseMaterialLock(movement, index);
+                _bannerManager.ReleaseMaterialLock(movement, index, _players);
                 // Make players right of the player that exited move to the left
-                for(int i = index; i < _players.Count; i++)
+                for(int i = index; i < _spawnPointsJoin.Length; i++)
                 {
-                    _players[i].transform.position = _spawnPointsJoin[i].position;
+                    if(i<_players.Count)
+                    {
+                        _players[i].transform.position = _spawnPointsJoin[i].position;
+                        _statusSpriteManager[i].UpdateReadyStatus(_players[i]);
+                    } else
+                    {
+                        _statusSpriteManager[i].SetStatusPlayerLeft();
+                    }
                 }
             }
         }
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
 
-        public void CheckGameStart()
+        public void CheckGameStart(PlayerMovement player)
         {
             // Check if all players are ready 
 
@@ -158,9 +176,26 @@ namespace BSA
             //}
 
             // Version E
+
+            _bannerManager.ColorBanner(player);
+            _statusSpriteManager[player.PositionId].UpdateReadyStatus(player);
+
             if(_players.All(p => p.IsReady) && _players.Count(p => p.IsReady) > 1)
             {
-                StartGame();
+                _countdownBar.gameObject.SetActive(true);
+                _countdownBar.value = 0.0f;
+                StartCoroutine(FillProgressBarRoutine());
+                _startRoutineInsttance = StartCoroutine(StartGameCoroutine());
+                //this.DoAfter(_startDelay, StartGame);
+                //StartGame();
+            } else
+            {
+                _countdownBar.gameObject.SetActive(false);
+                if(_startRoutineInsttance != null)
+                {
+                    StopCoroutine(_startRoutineInsttance);
+                    _startRoutineInsttance = null;
+                }
             }
 
             // If so, start game / countdown
@@ -207,21 +242,46 @@ namespace BSA
 
         private void StartGame()
         {
+                GameRunning = true;
+                _playerInputManager.DisableJoining();
+
+                // Activate the game Camera and disable the join Screen Camera
+                UpdateCameras();
+
+                for(int i = 0; i < _players.Count; i++)
+                {
+                    _players[i].GameStart(_spawnPointsGame[i].position, _timeBetweenReadyAndStart);
+                }
+
+                this.DoAfter(_timeBetweenReadyAndStart, _orbManager.StartOrbs);
+                float combinedTime = _timeBetweenReadyAndStart + _timeBetweenAttacks;
+                this.DoAfter(combinedTime, () => StartCoroutine(StartRecurringOrbAttacks()));
+        }
+
+        private IEnumerator StartGameCoroutine()
+        {
+            yield return new WaitForSeconds(_startDelay);
             GameRunning = true;
             _playerInputManager.DisableJoining();
 
-            // Activate the game Camera and disable the join Screen Camera
+            _transitionManager.MoveFromJoinToGameScreen(_transitionTime);
+            yield return new WaitForSeconds(_transitionTime/2);
+
             UpdateCameras();
+
 
             for(int i = 0; i < _players.Count; i++)
             {
                 _players[i].GameStart(_spawnPointsGame[i].position, _timeBetweenReadyAndStart);
             }
+            
+            yield return new WaitForSeconds(_transitionTime/2);
 
+            this.DoAfter(_timeUntilFirstIcreaseOfAttacks, IncreaseNumberOfAttacks);
+            this.DoAfter(_timeUntilSecondIcreaseOfAttacks, IncreaseNumberOfAttacks);
             this.DoAfter(_timeBetweenReadyAndStart, _orbManager.StartOrbs);
             float combinedTime = _timeBetweenReadyAndStart + _timeBetweenAttacks;
-            this.DoAfter(combinedTime, () => StartCoroutine(StartRecurringOrbAttacks())) ;
-            // Start Game (enable movement for players and orbs)
+            this.DoAfter(combinedTime, () => StartCoroutine(StartRecurringOrbAttacks()));
         }
 
         private void UpdateCameras()
@@ -242,12 +302,31 @@ namespace BSA
         {
             while(GameRunning)
             {
-                _orbManager.OrbAttack(_attackDuration);
+                for(int i = 0; i < _amountOfAttacks; i++){
+                    _orbManager.OrbAttack(_attackDuration);
+                }
                 yield return new WaitForSeconds(_timeBetweenAttacks);
+
             }
         }
 
+        private IEnumerator FillProgressBarRoutine()
+        {
+            float timeSpentFillingBar = 0f;
 
+            while(timeSpentFillingBar < _startDelay)
+            {
+                timeSpentFillingBar += Time.deltaTime;
+                _countdownBar.value = Mathf.Lerp(0, 1, timeSpentFillingBar / _startDelay);
+                yield return null;
+            }
+            _countdownBar.value = 1;
+        }
+
+        private void IncreaseNumberOfAttacks()
+        {
+            _amountOfAttacks++;
+        }
 
         // ----------------------------------------------------------------------------------------
     }
