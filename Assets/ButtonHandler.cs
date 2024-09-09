@@ -11,7 +11,7 @@ namespace BSA
 	public class ButtonHandler : MonoBehaviour
 	{
 		// --- Fields -------------------------------------------------------------------------------------------------
-		[SerializeField] private TransitionManager _transitionManager;
+		[SerializeField] private TransitionHandler _transitionManager;
 		private SceneManager _sceneManager;
 		// --- Properties ---------------------------------------------------------------------------------------------
 		

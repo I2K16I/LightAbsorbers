@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace BSA
 {
-	public class TransitionManager : MonoBehaviour
+	public class TransitionHandler : MonoBehaviour
 	{
         // --- Fields -------------------------------------------------------------------------------------------------
         [SerializeField] private bool _isOnHomeScreen = false;
@@ -48,10 +48,7 @@ namespace BSA
         {
             StartCoroutine(MoveScreenCoverInRoutine(totalTransitionTime/2, _joinScreen));
             
-            StartCoroutine(DelayedMoveTillDennisHelpsMeRoutine(totalTransitionTime/2, _gameScreen));   
-
-            // Wird nicht ausgeführt, wieso?
-            //this.DoAfter(totalTransitionTime/2, () => MoveScreenCoverOutRoutine(totalTransitionTime / 2, _gameScreen));
+            this.DoAfter(totalTransitionTime/2, () => StartCoroutine(MoveScreenCoverOutRoutine(totalTransitionTime / 2, _gameScreen)));
         }
 
         public void MoveFromMainMenuToGame(float transitionTime)
@@ -61,7 +58,6 @@ namespace BSA
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private IEnumerator MoveScreenCoverOutRoutine(float duration, RectTransform screen)
         {
-            Debug.Log(screen.gameObject.name);
             screen.localPosition = _screenBlockPos;
             float timeSinceTransitionStart = 0f;
             while (timeSinceTransitionStart < duration) 
@@ -102,19 +98,6 @@ namespace BSA
             fade.gameObject.SetActive(false);
         }
 
-        private IEnumerator DelayedMoveTillDennisHelpsMeRoutine(float duration, RectTransform screen)
-        {
-            yield return new WaitForSeconds(duration);
-            screen.localPosition = _screenBlockPos;
-            float timeSinceTransitionStart = 0f;
-            while(timeSinceTransitionStart < duration)
-            {
-                timeSinceTransitionStart += Time.deltaTime;
-                screen.localPosition = Vector3.Lerp(_screenBlockPos, _screenEndPos, timeSinceTransitionStart / duration);
-                yield return null;
-            }
-            screen.localPosition = _screenEndPos;
-        }
         // ----------------------------------------------------------------------------------------
     }
 }

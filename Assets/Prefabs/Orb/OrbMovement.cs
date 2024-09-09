@@ -27,6 +27,7 @@ namespace BSA
             float rngRotation = Random.Range(0f, 360f);
             transform.Rotate(0f, rngRotation, 0f);
             _moveDirection = transform.forward;
+            _moveSpeed = GameManager.Settings.OrbSpeed;
             IsPaused = true;
 
         }

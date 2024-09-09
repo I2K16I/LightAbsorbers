@@ -35,6 +35,8 @@ namespace BSA
         public int MaterialId { get; set; }
         public int PositionId { get; set; } 
 
+        public Material Material { get; set; }
+
         // --- Events -------------------------------------------------------------------------------------------------
 
         // --- Unity Functions ----------------------------------------------------------------------------------------
@@ -154,9 +156,9 @@ namespace BSA
             _lookDirection = new Vector3(0, 0, -1);
         }
 
-        public void ChangeMaterial(Material newMaterial)
+        public void ChangeMaterial()
         {
-            _renderer.material = newMaterial;
+            _renderer.material = Material;
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------

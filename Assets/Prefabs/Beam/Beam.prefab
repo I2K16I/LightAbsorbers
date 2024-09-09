@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 7168450643371954431}
   - component: {fileID: 1634229103430305621}
   - component: {fileID: 4597357445621578707}
-  - component: {fileID: 5555659918667388671}
   m_Layer: 0
   m_Name: Indicator
   m_TagString: Untagged
@@ -1340,23 +1339,6 @@ CapsuleCollider:
   m_Height: 1.0000002
   m_Direction: 1
   m_Center: {x: 0, y: -0.5000001, z: 0}
---- !u!114 &5555659918667388671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3355368619985782943}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f748ddc860c738442934548af022bb37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _container: {fileID: 6379499995380355484}
-  _collider: {fileID: 4597357445621578707}
-  _indicator: {fileID: 7168450643371954431}
-  _beamMaterial: {fileID: 2100000, guid: 94c5c1a969dedb044b1cd7d2db15f813, type: 2}
-  _indicatorMaterial: {fileID: 2100000, guid: b2a381f72a40c4e4786d16fc24979a0b, type: 2}
 --- !u!1 &4240886803163025724
 GameObject:
   m_ObjectHideFlags: 0
@@ -1366,7 +1348,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6379499995380355484}
-  - component: {fileID: 8265512863402023475}
+  - component: {fileID: 1093839506249257722}
+  - component: {fileID: 8943370487426101221}
   m_Layer: 0
   m_Name: Beam
   m_TagString: Untagged
@@ -1390,11 +1373,48 @@ Transform:
   - {fileID: 5002737389320919322}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &8265512863402023475
-MeshFilter:
+--- !u!114 &1093839506249257722
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4240886803163025724}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f748ddc860c738442934548af022bb37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _beam: {fileID: 5002737389320919322}
+  _collider: {fileID: 4597357445621578707}
+  _indicator: {fileID: 7168450643371954431}
+  _beamMaterial: {fileID: 2100000, guid: 94c5c1a969dedb044b1cd7d2db15f813, type: 2}
+  _indicatorMaterial: {fileID: 2100000, guid: b2a381f72a40c4e4786d16fc24979a0b, type: 2}
+  _settings: {fileID: 11400000, guid: eee09f3d56a8c404588342cbfd80c76e, type: 2}
+--- !u!54 &8943370487426101221
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4240886803163025724}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

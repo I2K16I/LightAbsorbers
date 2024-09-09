@@ -12,10 +12,8 @@ namespace BSA
         // --- Fields -------------------------------------------------------------------------------------------------
         [SerializeField] private bool _showSpawnRadius = true;
         [SerializeField] private GameObject _prefab;
-        [SerializeField] private int _SpawnCount = 8;
         [SerializeField] private float _spawnRadius = 1f;
         [SerializeField] private GameObject[] _outerOrbs;
-        [SerializeField] private BeamManager[] _beams;
         [SerializeField] private BeamSpawner _beamSpawner;
 
         private List<OuterOrbs> _outerOrbScripts = new List<OuterOrbs>();
@@ -30,11 +28,11 @@ namespace BSA
 		// --- Unity Functions ----------------------------------------------------------------------------------------
 		private void Awake()
 		{
-            _orbs = new OrbMovement[_SpawnCount];
+            _orbs = new OrbMovement[GameManager.Settings.NumberOfOrbs];
 			Vector3 spawnPosition = transform.position;
             Vector3 offset = Vector3.zero;
 
-            for(int i  = 0; i < _SpawnCount; ++i)
+            for(int i  = 0; i < GameManager.Settings.NumberOfOrbs; ++i)
             {
                 offset = new Vector3(Random.Range(-_spawnRadius, _spawnRadius), 0, Random.Range(-_spawnRadius, _spawnRadius));
                 spawnPosition += offset;
@@ -87,10 +85,8 @@ namespace BSA
             _outerOrbScripts[orbThree].AttackId = attackList.Count;
             attackList.Add(attackList.Count);
 
-            //_beams[0].SetNewPoision(_outerOrbs[orbOne].transform, orbTwo.transform);
-            //_beams[1].SetNewPoision(_outerOrbs[orbThree].transform, orbTwo.transform);
-            _beamSpawner.SpawnBeamAt(_outerOrbs[orbOne].transform, orbTwo.transform, duration);
-            _beamSpawner.SpawnBeamAt(_outerOrbs[orbThree].transform, orbTwo.transform, duration);
+            _beamSpawner.SpawnBeamAt(_outerOrbs[orbOne].transform, orbTwo.transform);
+            _beamSpawner.SpawnBeamAt(_outerOrbs[orbThree].transform, orbTwo.transform);
 
             this.DoAfter(duration, () => EndOrbAttack(IndexOfMovingOrb));
 
@@ -176,18 +172,14 @@ namespace BSA
         private void EndOrbAttack(int IndexOfStoppedOrb)
         {
             _orbs[IndexOfStoppedOrb].ResumeMovement();
-            //_beams[0].ResetPosition();
-            //_beams[1].ResetPosition();
             int attackToEnd = attackList.ElementAt(0);
-            for (int i = 0; i < _outerOrbs.Length; i++)
+
+            foreach(OuterOrbs orb in _outerOrbScripts.Where(orb => orb.AttackId == attackToEnd))
             {
-                if(_outerOrbScripts[i].AttackId == attackToEnd)
-                {
-                    _outerOrbScripts[i].AttackId = -1;
-                    _outerOrbScripts[i].IsAlreadyAttacking = false;
-                }
-                
+                orb.AttackId = -1;
+                orb.IsAlreadyAttacking = false;
             }
+
             attackList.Remove(attackToEnd);
         }
         // ----------------------------------------------------------------------------------------

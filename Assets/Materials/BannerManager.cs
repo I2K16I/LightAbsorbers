@@ -1,93 +1,89 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 namespace BSA
 {
-	public class BannerManager : MonoBehaviour
-	{
-		// --- Fields -------------------------------------------------------------------------------------------------
-		[SerializeField] Material _noPlayerMaterial;
-		[SerializeField] Material[] _playerMaterials;
-		[SerializeField] MeshRenderer[] _bannerRenderer;
-		[SerializeField] MeshRenderer[] _podiumRenderer;
-		
+    public class BannerManager : MonoBehaviour
+    {
+        [System.Serializable]
+        public class PlayerMaterial
+        {
+            public Material material;
+            public bool isInUse;
+        }
 
-		private bool[] _materialIsUsed = new bool[4];
-		// --- Properties ---------------------------------------------------------------------------------------------
-		
-		// --- Events -------------------------------------------------------------------------------------------------
 
-		// --- Unity Functions ----------------------------------------------------------------------------------------
-		private void Awake()
-		{
+        // --- Fields -------------------------------------------------------------------------------------------------
+        [SerializeField] private PlayerMaterial[] _playerMaterials;
 
-		}		
+        [SerializeField] private List<Banner> _banners;
 
-		// --- Interface implementations ------------------------------------------------------------------------------
 
-		// --- Event callbacks ----------------------------------------------------------------------------------------
+        // --- Properties ---------------------------------------------------------------------------------------------
 
-		// --- Public/Internal Methods --------------------------------------------------------------------------------
-		public void DeterminColor(PlayerMovement player, int spawnIndex)
-		{
-			for(int i = 0;  i < _materialIsUsed.Length; i++)
-			{
-				if(!_materialIsUsed[i])
-				{
-					player.MaterialId = i;
-					player.PositionId = spawnIndex;
-					_materialIsUsed[i] = true;
-					player.ChangeMaterial(_playerMaterials[i]);
+        // --- Events -------------------------------------------------------------------------------------------------
 
-					int indexToChangeMaterial = GameManager.Instance.PlayerCount;
-					//_bannerRenderer[indexToChangeMaterial].material = _playerMaterials[i];
-					_podiumRenderer[indexToChangeMaterial].material = _playerMaterials[i];
-					break;
-				}
-			}
-		}
+        // --- Unity Functions ----------------------------------------------------------------------------------------
+        private void Awake()
+        {
 
-		public void ColorBanner(PlayerMovement player)
-		{
-			if(player.IsReady)
-			{
-				_bannerRenderer[player.PositionId].material = _playerMaterials[player.MaterialId];
-			} else
-			{
-                _bannerRenderer[player.PositionId].material = _noPlayerMaterial;
+        }
+
+        // --- Interface implementations ------------------------------------------------------------------------------
+
+        // --- Event callbacks ----------------------------------------------------------------------------------------
+
+        // --- Public/Internal Methods --------------------------------------------------------------------------------
+        public void PlayerJoined(PlayerMovement player)
+        {
+            PlayerMaterial playerMaterial = _playerMaterials.First(pm => pm.isInUse == false);
+            player.Material = playerMaterial.material;
+            playerMaterial.isInUse = true;
+            player.ChangeMaterial();
+
+            Banner banner = _banners[player.PositionId];
+            banner.AssignPlayer(player);
+        }
+
+        public void ColorBanner(PlayerMovement player)
+        {
+            _banners[player.PositionId].UpdateReady();
+        }
+
+        public void PlayerLeft(PlayerMovement player)
+        {
+            PlayerMaterial playerMaterial = _playerMaterials.First(pm => pm.material == player.Material);
+            playerMaterial.isInUse = false;
+
+            Banner banner = _banners[player.PositionId];
+            banner.RemovePlayer();
+
+            // Iterate banners right of the one that got removed
+            int startIndex = player.PositionId + 1;
+            for(int i = startIndex; i < _banners.Count; i++)
+            {
+                if(_banners[i].Player != null)
+                {
+                    _banners[i].Player.PositionId--;
+                    _banners[i - 1].AssignPlayer(_banners[i].Player);
+                    _banners[i].RemovePlayer();
+                }
             }
-		}
+        }
 
-		public void ReleaseMaterialLock(PlayerMovement player, int index, List<PlayerMovement> remainingPlayers)
-		{
-			_materialIsUsed[player.MaterialId] = false;	
+        public void UpdateSlotColors(PlayerMovement player, int index)
+        {
+            _banners[index].AssignPlayer(player);
+        }
 
-			// Hier noch die Banner rechts vom Spieler der gegangen ist umfärben
-			for(int i = index ; i < _podiumRenderer.Length; i++)
-			{
-				if(i<remainingPlayers.Count && remainingPlayers[i].IsReady)
-				{
-					_bannerRenderer[i].material = _playerMaterials[remainingPlayers[i].MaterialId];
-					remainingPlayers[i].PositionId = i;
-					_podiumRenderer[i].material = _playerMaterials[remainingPlayers[i].MaterialId];
-				} else if(i<remainingPlayers.Count && !remainingPlayers[i].IsReady)
-				{
-                    _bannerRenderer[i].material = _noPlayerMaterial;
-                    remainingPlayers[i].PositionId = i;
-                    _podiumRenderer[i].material = _playerMaterials[remainingPlayers[i].MaterialId];
-				} else
-				{
-                    _bannerRenderer[i].material = _noPlayerMaterial;
-					_podiumRenderer[i].material = _noPlayerMaterial;
-				}
-			}
-		}
-		
-		// --- Protected/Private Methods ------------------------------------------------------------------------------
-		
-		// ----------------------------------------------------------------------------------------
-	}
+        public void RemoveSlotColor(int index)
+        {
+            _banners[index].RemovePlayer();
+        }
+
+        // --- Protected/Private Methods ------------------------------------------------------------------------------
+
+        // ----------------------------------------------------------------------------------------
+    }
 }

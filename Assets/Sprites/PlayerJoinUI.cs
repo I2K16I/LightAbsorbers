@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace BSA
 {
-	public class StatusSpriteManager : MonoBehaviour
+	public class PlayerJoinUI : MonoBehaviour
 	{
 		// --- Fields -------------------------------------------------------------------------------------------------
 		[SerializeField] private GameObject _joinButton;
@@ -30,12 +30,12 @@ namespace BSA
 
 		// --- Public/Internal Methods --------------------------------------------------------------------------------
 
-		public void UpdateReadyStatus(PlayerMovement player)
+		public void UpdateReadyStatus(bool IsReady)
 		{
 			_joinButton.SetActive(false);
-            _readyButton.SetActive(!player.IsReady);
-            _notReadyButton.SetActive(player.IsReady);
-            _leaveButton.SetActive(!player.IsReady);
+            _readyButton.SetActive(!IsReady);
+            _notReadyButton.SetActive(IsReady);
+            _leaveButton.SetActive(!IsReady);
         }
 
 		public void SetStatusPlayerLeft()

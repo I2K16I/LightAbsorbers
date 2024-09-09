@@ -9,13 +9,13 @@ namespace BSA
 	public class BeamManager : MonoBehaviour
 	{
 		// --- Fields -------------------------------------------------------------------------------------------------
-		[SerializeField] private Transform _container;
+		[SerializeField] private Transform _beam;
 		[SerializeField] private CapsuleCollider _collider;
 		[SerializeField] private MeshRenderer _indicator;
 		[SerializeField] private Material _beamMaterial;
 		[SerializeField] private Material _indicatorMaterial;
-		
-		private Vector3 _startPos = new Vector3(0, -5, 0);
+		private Settings _settings;
+
 		// --- Properties ---------------------------------------------------------------------------------------------
 		
 		// --- Events -------------------------------------------------------------------------------------------------
@@ -23,12 +23,12 @@ namespace BSA
 		// --- Unity Functions ----------------------------------------------------------------------------------------
 		private void Awake()
 		{
-	
+			_settings = GameManager.Settings;
 		}
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.gameObject.TryGetComponent<PlayerMovement>(out PlayerMovement player))
+            if(other.gameObject.TryGetComponent(out PlayerMovement player))
 			{
 				player.Hit();
 			}
@@ -40,56 +40,68 @@ namespace BSA
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
 
-		public void SetNewProperties(Transform pointOne, Transform pointTwo, float lifetime)
+		public void SetNewProperties(Transform pointOne, Transform pointTwo)
 		{
             Vector3 pointOnePos = pointOne.position;
             Vector3 pointTwoPos = pointTwo.position;
 
-			_container.position = new Vector3(pointOne.position.x, pointTwo.position.y, pointOne.position.z) ;
+			transform.position = new Vector3(pointOne.position.x, pointTwo.position.y, pointOne.position.z) ;
 
             Vector3 vectorBetween = pointOnePos - pointTwoPos;
             Vector3 normal = Vector3.Cross(vectorBetween, Vector3.up);
-            _container.forward = normal;
+            transform.forward = normal;
 
 			float targetScale = Vector3.Distance(pointOnePos, pointTwoPos);
-			StartCoroutine(ScaleUpRoutine(.5f, targetScale));
-			this.DoAfter(lifetime, DeleteSelf);
+			StartCoroutine(ScaleUpRoutine(targetScale));
         }
 
-		public void DeleteSelf()
-		{
-   //         _container.position = _startPos;
-   //         _container.localScale = new Vector3(0.1f, 1, 0.1f);
-			//_collider.enabled = false;
-			//_indicator.material = _indicatorMaterial;
-			Destroy(gameObject);
-
-        }
 		// --- Protected/Private Methods ------------------------------------------------------------------------------
-		private IEnumerator ScaleUpRoutine(float scaleDuration, float targetScale)
+		private IEnumerator ScaleUpRoutine(float targetScale)
 		{
+			
 			//Debug.Log(targetScale);
 			float scalingSinceSeconds = 0.0f;
-            float currentScale = transform.localScale.x;
-			float targetScaleVector = targetScale;
-			while (scalingSinceSeconds < scaleDuration)
+			float scaleDuration = _settings.BeamScaleUpDuration;
+			float lifetime = _settings.AttackDuration;
+			float windUpTime = _settings.WindUpTime;
+
+			if(windUpTime + scaleDuration > lifetime)
 			{
-                //Debug.Log(scalingSinceSeconds);
-                _container.localScale = new Vector3(Mathf.Lerp(currentScale, targetScale, scalingSinceSeconds / scaleDuration), 1, 1);
+				scaleDuration = lifetime/8;
+				windUpTime = lifetime / 8;
+			}
+
+            Vector3 scale = transform.localScale;
+            float start = scale.x;
+
+			//while (scalingSinceSeconds < scaleDuration)
+
+			while(scalingSinceSeconds < scaleDuration)
+                {
+				//Debug.Log(scalingSinceSeconds);
+				scale.x = Mathf.Lerp(start, targetScale, scalingSinceSeconds / scaleDuration);
+                transform.localScale = scale;
                 scalingSinceSeconds += Time.deltaTime;
 				yield return null;
 			}
 
-            _container.localScale = new Vector3(targetScale, 1, 1);
-			this.DoAfter(1f, StartBeam);
-			
-		}
+			scale.x = targetScale;
+            transform.localScale = scale;
 
-		private void StartBeam()
-		{
-			_collider.enabled = true;
-			_indicator.material = _beamMaterial;
-		}
+			yield return new WaitForSeconds(windUpTime);
+
+			// Enable colliders
+            _collider.enabled = true;
+            _indicator.material = _beamMaterial;
+			
+
+			// Attention: the lifetime could potentially be less then 0, even though it't not allowed to be!
+            yield return new WaitForSeconds(lifetime-(windUpTime + scaleDuration));
+
+			// Destroy self
+            Destroy(gameObject);
+        }
+
 		// ----------------------------------------------------------------------------------------
 	}
 }
