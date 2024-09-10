@@ -23,5 +23,7 @@ MonoBehaviour:
   _transitionTime: 1
   _timeBetweenTransitionAndStart: 2
   _numberOfOrbs: 18
-  _orbSpeed: 5
+  _orbStartSpeed: 4
+  _orbEndSpeed: 8
+  _timeTillEndSpeed: 60
   _orbSize: 1

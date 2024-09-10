@@ -36,8 +36,12 @@ namespace BSA
 
 		[Header("Orb Settings")]
 		[SerializeField] private int _numberOfOrbs = 8;
-		[SerializeField] private float _orbSpeed = 1f;
-		[SerializeField] private float _orbSize = 1f;
+		[SerializeField] private float _orbStartSpeed = 1f;
+		[SerializeField] private float _orbEndSpeed = 3f;
+		[SerializeField] private float _timeTillEndSpeed = 60f;
+		[Tooltip("The time between speed increses. 1 meaning once a second. Lower then 1 means more than once a second, highter means less than one time a second.")]
+		[SerializeField] private float _updateFrequency = 1f;
+        [SerializeField] private float _orbSize = 1f;
 
         // --- Properties ---------------------------------------------------------------------------------------------
         public float AttackDuration => _attackDuration;
@@ -54,7 +58,10 @@ namespace BSA
 		public float TimeBetweenTransitionAndStart => _timeBetweenTransitionAndStart;
 
 		public int NumberOfOrbs => _numberOfOrbs;
-		public float OrbSpeed => _orbSpeed;
+		public float OrbStartSpeed => _orbStartSpeed;
+		public float OrbEndSpeed => _orbEndSpeed;
+		public float TimeTillEndSpeed => _timeTillEndSpeed;
+		public float UpdateFrequency => _updateFrequency;
 		public float OrbSize => _orbSize;
 
 		// --- Events -------------------------------------------------------------------------------------------------
