@@ -6,11 +6,13 @@ using UnityEngine;
 
 namespace BSA
 {
-	public class OuterOrbs : MonoBehaviour
+	public class OuterOrb : MonoBehaviour
 	{
 		// --- Fields -------------------------------------------------------------------------------------------------
+		[SerializeField] Transform _center;
 
 		// --- Properties ---------------------------------------------------------------------------------------------
+		public Transform Center => _center;
 		public bool IsAlreadyAttacking { get; set; } = false;
 		public int AttackId { get; set; } = -1;
 		// --- Events -------------------------------------------------------------------------------------------------
