@@ -10,7 +10,7 @@
                     "type": "Value",
                     "id": "4380a7dd-1e31-42fb-be71-aef0bf904abd",
                     "expectedControlType": "Vector2",
-                    "processors": "",
+                    "processors": "NormalizeVector2",
                     "interactions": "",
                     "initialStateCheck": true
                 },
@@ -157,8 +157,8 @@
                 },
                 {
                     "name": "",
-                    "id": "995a629c-26fa-4011-9bc2-a4eb27609725",
-                    "path": "<Gamepad>/buttonEast",
+                    "id": "187b82ca-4a63-4778-8289-9a0ebff1d94e",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -179,8 +179,8 @@
                 },
                 {
                     "name": "",
-                    "id": "d5068d44-faf9-480c-85f2-13032cbb9760",
-                    "path": "<Gamepad>/buttonSouth",
+                    "id": "2d5c6910-c25a-46e3-9462-c4580c19342f",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -190,8 +190,8 @@
                 },
                 {
                     "name": "",
-                    "id": "2d5c6910-c25a-46e3-9462-c4580c19342f",
-                    "path": "<Keyboard>/escape",
+                    "id": "d4b396cb-ffc0-4594-bef6-a0057b1cbcd7",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

@@ -39,7 +39,7 @@ namespace BSA
         private int _startAmountOfAttacks = 1;
         private readonly List<PlayerMovement> _players = new();
         private Coroutine _startRoutineInsttance = null;
-        
+
         // --- Properties ---------------------------------------------------------------------------------------------
         public static GameManager Instance { get; private set; }
 
@@ -49,12 +49,12 @@ namespace BSA
         public bool GameRunning { get; private set; } = false;
 
         // --- Events -------------------------------------------------------------------------------------------------
-        UnityEvent _playerCountChanged = new();
+
 
         // --- Unity Functions ----------------------------------------------------------------------------------------
         private void Awake()
         {
-            if(Instance != null && Instance != this) 
+            if(Instance != null && Instance != this)
             {
                 Destroy(this.gameObject);
                 return;
@@ -100,8 +100,7 @@ namespace BSA
             }
             else
             {
-                _bannerManager.PlayerLeft(movement);                
-                
+                _bannerManager.PlayerLeft(movement);
             }
         }
 
@@ -176,9 +175,8 @@ namespace BSA
                 _countdownBar.value = 0.0f;
                 StartCoroutine(FillProgressBarRoutine());
                 _startRoutineInsttance = StartCoroutine(StartGameCoroutine());
-                //this.DoAfter(_startDelay, StartGame);
-                //StartGame();
-            } else
+            }
+            else
             {
                 _countdownBar.gameObject.SetActive(false);
                 if(_startRoutineInsttance != null)
@@ -187,16 +185,16 @@ namespace BSA
                     _startRoutineInsttance = null;
                 }
             }
-
-            // If so, start game / countdown
         }
 
         public void CheckGameEnd()
         {
             // If only one player is still alive, end the game
-            PlayerMovement winner = _players.SingleOrDefault(p => p.IsAlive);
-            if(winner != null)
+            var alivePlayers = _players.Where(p => p.IsAlive);
+            if(alivePlayers.Count() == 1)
             {
+                PlayerMovement winner = alivePlayers.First();
+
                 GameRunning = false;
                 _orbManager.EndGame();
                 _winningCamera.gameObject.transform.position = winner.transform.position + _winningCameraOffset;
@@ -209,27 +207,19 @@ namespace BSA
             // Show victory screen or whatever
         }
 
+        public void DeviceLost(int playerNumber)
+        {
+            Time.timeScale = 0.0f;
+            _transitionManager.ShowDeviceLostScreen(playerNumber);
+        }
+
+        public void DeviceRegained()
+        {
+            Time.timeScale = 1.0f;
+            _transitionManager.HideDeviceLostScreen();
+        }
+
         // --- Protected/Private Methods ------------------------------------------------------------------------------
-        //private void UpdateGameStatus()
-        //{
-        //    if(_players.Count == 1 && GameStarted)
-        //    {
-        //        PlayerMovement winner = null;
-
-        //        for(int i = 0; i < _players.Count; i++)
-        //        {
-        //            if(_players[i] != null)
-        //            {
-        //                winner = _players[i];
-        //            }
-        //        }
-
-        //        _orbSpawner.EndGame();
-        //        winner.EndGame();
-        //        // Gewinnen des letzten Spielers
-        //    }
-        //}
-
 
         private IEnumerator StartGameCoroutine()
         {
@@ -241,6 +231,7 @@ namespace BSA
             _transitionManager.MoveFromJoinToGameScreen(transitionTime);
             yield return new WaitForSeconds(transitionTime / 2);
 
+            _countdownBar.gameObject.SetActive(false);
             UpdateCameras();
 
             float timeBetweenTransitonAndGameStart = _settings.TimeBetweenTransitionAndStart;
@@ -249,7 +240,7 @@ namespace BSA
             {
                 _players[i].GameStart(_spawnPointsGame[i].position, timeBetweenTransitonAndGameStart);
             }
-            
+
             yield return new WaitForSeconds(transitionTime / 2);
 
             this.DoAfter(_settings.TimeUntilFirstIncrease, IncreaseNumberOfAttacks);
@@ -277,7 +268,8 @@ namespace BSA
         {
             while(GameRunning)
             {
-                for(int i = 0; i < _startAmountOfAttacks; i++){
+                for(int i = 0; i < _startAmountOfAttacks; i++)
+                {
                     _orbManager.OrbAttack(_settings.AttackDuration);
                     yield return new WaitForSeconds(1f);
                 }

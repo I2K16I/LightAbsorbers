@@ -26,14 +26,6 @@ namespace BSA
 			_settings = GameManager.Settings;
 		}
 
-        private void OnTriggerEnter(Collider other)
-        {
-            if(other.gameObject.TryGetComponent(out PlayerMovement player))
-			{
-				player.Hit();
-			}
-        }
-
         // --- Interface implementations ------------------------------------------------------------------------------
 
         // --- Event callbacks ----------------------------------------------------------------------------------------

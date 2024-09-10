@@ -19,9 +19,7 @@ namespace BSA
         [SerializeField] private MeshRenderer _renderer;
 
         private Vector3 _moveDirection = Vector3.zero;
-        private Vector3 _lookDirection = Vector3.zero;
 
-        private bool _isTurning = false;
         private bool _canMove = false;
         private float _turnVelocity = 0.00f;
 
@@ -42,7 +40,7 @@ namespace BSA
         // --- Unity Functions ----------------------------------------------------------------------------------------
         private void Awake()
         {
-            _lookDirection = transform.forward;
+
         }
 
         private void FixedUpdate()
@@ -61,19 +59,19 @@ namespace BSA
             }
 
             // Rotate
-            if(_isTurning)
+            if(_moveDirection != Vector3.zero)
             {
-                float angle = Vector3.Angle(transform.forward, _lookDirection);
+                float angle = Vector3.Angle(transform.forward, _moveDirection);
                 if(angle > 0.05f)
                 {
-                    float targetAngle = Vector3.SignedAngle(Vector3.forward, _lookDirection, Vector3.up);
+                    float targetAngle = Vector3.SignedAngle(Vector3.forward, _moveDirection, Vector3.up);
                     float newAngle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _turnVelocity, _turnTime);
                     transform.eulerAngles = new Vector3(0f, newAngle, 0f);
                 }
                 else
                 {
-                    transform.forward = _lookDirection;
-                    _isTurning = false;
+                    transform.forward = _moveDirection;
+                    //_isTurning = false;
                 }
             }
         }
@@ -89,13 +87,17 @@ namespace BSA
             Vector2 input = context.ReadValue<Vector2>();
             _moveDirection = new Vector3(input.x, 0, input.y);
 
-            if(_moveDirection != Vector3.zero)
-            {
-                _moveDirection.Normalize();
+            //if(_moveDirection != Vector3.zero)
+            //{
+            //    _moveDirection.Normalize();
 
-                _isTurning = true;
-                _lookDirection = _moveDirection;
-            }
+            //    _isTurning = true;
+            //    _lookDirection = _moveDirection;
+            //}
+            //else
+            //{
+            //    _isTurning = false;
+            //}
         }
 
         public void OnReady(InputAction.CallbackContext context)
@@ -124,11 +126,13 @@ namespace BSA
 
         public void OnDeviceLost()
         {
+            GameManager.Instance.DeviceLost(PositionId);
             Debug.Log("Device was lost");
         }
 
         public void OnDeviceRegained()
         {
+            GameManager.Instance.DeviceRegained();
             Debug.Log("Device was regained");
         }
 
@@ -152,8 +156,7 @@ namespace BSA
         {
             _turnTime = 1f;
             _canMove = false;
-            _isTurning = true;
-            _lookDirection = new Vector3(0, 0, -1);
+            _moveDirection = Vector3.back;
         }
 
         public void ChangeMaterial()

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7168450643371954431}
   - component: {fileID: 1634229103430305621}
   - component: {fileID: 4597357445621578707}
+  - component: {fileID: 6882133295226457400}
   m_Layer: 0
   m_Name: Indicator
   m_TagString: Untagged
@@ -31,7 +32,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 1, z: 0.1}
+  m_LocalScale: {x: 0.2, y: 1, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6379499995380355484}
@@ -1339,6 +1340,18 @@ CapsuleCollider:
   m_Height: 1.0000002
   m_Direction: 1
   m_Center: {x: 0, y: -0.5000001, z: 0}
+--- !u!114 &6882133295226457400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3355368619985782943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faf88c0ef0e4ef34983463a7eb1f6ec1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4240886803163025724
 GameObject:
   m_ObjectHideFlags: 0
@@ -1390,7 +1403,6 @@ MonoBehaviour:
   _indicator: {fileID: 7168450643371954431}
   _beamMaterial: {fileID: 2100000, guid: 94c5c1a969dedb044b1cd7d2db15f813, type: 2}
   _indicatorMaterial: {fileID: 2100000, guid: b2a381f72a40c4e4786d16fc24979a0b, type: 2}
-  _settings: {fileID: 11400000, guid: eee09f3d56a8c404588342cbfd80c76e, type: 2}
 --- !u!54 &8943370487426101221
 Rigidbody:
   m_ObjectHideFlags: 0

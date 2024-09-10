@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,14 +12,10 @@ namespace BSA
 	{
         // --- Fields -------------------------------------------------------------------------------------------------
         [SerializeField] private bool _isOnHomeScreen = false;
+        [SerializeField] private GameObject _homeScreenFade;
         [SerializeField] private RectTransform _joinScreen;
-		[SerializeField] private RectTransform _gameScreen;
-
-        [SerializeField] private Vector3 _screenStartPos = new Vector3(-75, 0, -6);
-        [SerializeField] private Vector3 _screenBlockPos = new Vector3(0, 0, -6);
-        [SerializeField] private Vector3 _screenEndPos = new Vector3(75, 0, -6);
-        
-
+        [SerializeField] private GameObject _deviceLostCanvas;
+        [SerializeField] private TMP_Text _deviceLostText;
         // --- Properties ---------------------------------------------------------------------------------------------
 
         // --- Events -------------------------------------------------------------------------------------------------
@@ -26,11 +23,9 @@ namespace BSA
         // --- Unity Functions ----------------------------------------------------------------------------------------
         private void Awake()
 		{
-			//_joinScreen.position = new Vector3(0, 0, -10);
-            _joinScreen.localPosition = new Vector3(0, 0, -10);
             if(_isOnHomeScreen)
             {
-                StartCoroutine(FadeRoutine(1f, _joinScreen.gameObject.GetComponent<Image>()));
+                StartCoroutine(FadeRoutine(1f, _homeScreenFade.gameObject.GetComponent<Image>()));
             }
             else
             { 
@@ -48,38 +43,65 @@ namespace BSA
         {
             StartCoroutine(MoveScreenCoverInRoutine(totalTransitionTime/2, _joinScreen));
             
-            this.DoAfter(totalTransitionTime/2, () => StartCoroutine(MoveScreenCoverOutRoutine(totalTransitionTime / 2, _gameScreen)));
+            this.DoAfter(totalTransitionTime/2, () => StartCoroutine(MoveScreenCoverOutRoutine(totalTransitionTime / 2, _joinScreen)));
         }
 
         public void MoveFromMainMenuToGame(float transitionTime)
         {
-            StartCoroutine(MoveScreenCoverInRoutine(transitionTime, _gameScreen));
+            StartCoroutine(MoveScreenCoverInRoutine(transitionTime, _joinScreen));
+        }
+
+        public void ShowDeviceLostScreen(int deviceNumber)
+        {
+            _deviceLostCanvas.SetActive(true);
+            int displayedDeviceNumber = deviceNumber + 1;
+            _deviceLostText.text = "Controller " + displayedDeviceNumber + " disconnected!";
+        }
+
+        public void HideDeviceLostScreen()
+        {
+            _deviceLostCanvas?.SetActive(false);
         }
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private IEnumerator MoveScreenCoverOutRoutine(float duration, RectTransform screen)
         {
-            screen.localPosition = _screenBlockPos;
+
+            Vector2 min = new Vector2(0, 0);
+            Vector2 max = new Vector2(1, 1);
+            screen.anchorMin = min;
+            screen.anchorMax = max;
             float timeSinceTransitionStart = 0f;
             while (timeSinceTransitionStart < duration) 
             {
                 timeSinceTransitionStart += Time.deltaTime;
-                screen.localPosition = Vector3.Lerp(_screenBlockPos, _screenEndPos, timeSinceTransitionStart / duration);
+                min.x = Mathf.Lerp(0, 1, timeSinceTransitionStart / duration);
+                max.x = Mathf.Lerp(1, 2, timeSinceTransitionStart / duration);
+                screen.anchorMin = min;
+                screen.anchorMax = max;
                 yield return null;
             }
-            screen.localPosition = _screenEndPos;
+            screen.anchorMin = new Vector2(1, 0);
+            screen.anchorMax = new Vector2(2, 1);
         }
 
         private IEnumerator MoveScreenCoverInRoutine(float duration, RectTransform screen)
         {
-            screen.localPosition = _screenStartPos;
+            Vector2 min = new Vector2(-1, 0);
+            Vector2 max = new Vector2(0, 1);
+            screen.anchorMin = min;
+            screen.anchorMax = max;
             float timeSinceTransitionStart = 0f;
             while(timeSinceTransitionStart < duration)
             {
                 timeSinceTransitionStart += Time.deltaTime;
-                screen.localPosition = Vector3.Lerp(_screenStartPos, _screenBlockPos, timeSinceTransitionStart / duration);
+                min.x = Mathf.Lerp(-1, 0, timeSinceTransitionStart / duration);
+                max.x = Mathf.Lerp(0, 1, timeSinceTransitionStart / duration);
+                screen.anchorMin = min;
+                screen.anchorMax = max;
                 yield return null;
             }
-            screen.localPosition = _screenBlockPos;
+            screen.anchorMin = new Vector2(0, 0);
+            screen.anchorMax = new Vector2(1, 1);
         }
 
         private IEnumerator FadeRoutine(float duration, Image fade)

@@ -46,6 +46,9 @@ namespace BSA
 
         public void RemovePlayer()
         {
+            if(this == null)
+                return;
+
             Player = null;
             _podium.material = _noPlayerMaterial;
             _banner.material = _noPlayerMaterial;
