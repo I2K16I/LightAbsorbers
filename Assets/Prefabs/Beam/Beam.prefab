@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7168450643371954431}
   - component: {fileID: 1634229103430305621}
   - component: {fileID: 4597357445621578707}
-  - component: {fileID: 6882133295226457400}
+  - component: {fileID: 4760993446264629971}
   m_Layer: 0
   m_Name: Indicator
   m_TagString: Untagged
@@ -1256,7 +1256,7 @@ MonoBehaviour:
   m_PivotPosition: {x: 0, y: 0, z: 0}
   m_UnmodifiedMeshVersion: 1354
   m_ShapeBox:
-    m_Center: {x: 2.731166, y: 1.5826674, z: -0.7873874}
+    m_Center: {x: 2.731166, y: 1.582667, z: -0.7873874}
     m_Extent: {x: 0.5, y: 0.5, z: 0.5}
   references:
     version: 2
@@ -1337,10 +1337,10 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5000001
-  m_Height: 1.0000002
+  m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: -0.5000001, z: 0}
---- !u!114 &6882133295226457400
+--- !u!114 &4760993446264629971
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1349,9 +1349,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3355368619985782943}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faf88c0ef0e4ef34983463a7eb1f6ec1, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b274cdc124b33d44aa905e0aa502ebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _triggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
+  _triggerExit:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &4240886803163025724
 GameObject:
   m_ObjectHideFlags: 0
@@ -1398,7 +1404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f748ddc860c738442934548af022bb37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _beam: {fileID: 5002737389320919322}
+  _beamMeshTrigger: {fileID: 4760993446264629971}
   _collider: {fileID: 4597357445621578707}
   _indicator: {fileID: 7168450643371954431}
   _beamMaterial: {fileID: 2100000, guid: 94c5c1a969dedb044b1cd7d2db15f813, type: 2}

@@ -1,20 +1,35 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace BSA
 {
-    public class OuterOrb : MonoBehaviour
+    public class TriggerCallbacks : MonoBehaviour
     {
         // --- Fields -------------------------------------------------------------------------------------------------
-        [SerializeField] Transform _center;
+        [SerializeField] private UnityEvent<Collider> _triggerEnter;
+        [SerializeField] private UnityEvent<Collider> _triggerExit;
 
         // --- Properties ---------------------------------------------------------------------------------------------
-        public Transform Center => _center;
-        public bool IsAttacking { get; set; } = false;
+        public UnityEvent<Collider> TriggerEnter => _triggerEnter;
+        public UnityEvent<Collider> TriggerExit => _triggerExit;
 
         // --- Events -------------------------------------------------------------------------------------------------
 
-        // --- Unity Functions ----------------------------------------------------------------------------------------
-        
+        // --- Unity Functions ----------------------------------------------------------------------------------------       
+        private void OnTriggerEnter(Collider other)
+        {
+            _triggerEnter.Invoke(other);
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            _triggerExit.Invoke(other);
+        }
+
         // --- Interface implementations ------------------------------------------------------------------------------
 
         // --- Event callbacks ----------------------------------------------------------------------------------------

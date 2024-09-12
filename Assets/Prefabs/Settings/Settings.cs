@@ -12,11 +12,11 @@ namespace BSA
 		// --- Fields -------------------------------------------------------------------------------------------------
 		[Header("Attack Settings")]
 		[Tooltip("The duration of each attack, this does include the Beam Scale Up Duration. Meaning 6 Seconds Attack duration and 1 Seconds Scale up = 5 Seconds of actual attack duration. If the Beam Scale Duration and Wind Up Time exeed the attack duration they will be set to 1/8th of this value.")]
-		[SerializeField] private float _attackDuration = 6.0f;
+		[SerializeField] private float _beamActiveDuration = 6.0f;
 		[Tooltip("This value decides how fast the beam builds up. A value over 1 Second is not adviced. If this Value and the Wind Up Time exeed the attack duration they will be set to 1/8th of the Attack Duration.")]
 		[SerializeField] private float _beamScaleUpDuration = 1.0f;
 		[Tooltip("This value is the time (s) between the beams scaling to the target length and them starting to dmg players. This gives players a chance to react. If the Beam Scale Duration and this value exeed the attack duration they will be set to 1/8th of the Attack Duration.")]
-		[SerializeField] private float _windUpTime = 1.0f;
+		[SerializeField] private float _beamWindUpTime = 1.0f;
 		[Tooltip("The time between the start of an attack-wave and the start of the next wave of attacks.")]
 		[SerializeField] private float _timeBetweenAttacks = 8.0f;
 		[Tooltip("The amount of attacks the game start with.")]
@@ -44,13 +44,14 @@ namespace BSA
         [SerializeField] private float _orbSize = 1f;
 
         // --- Properties ---------------------------------------------------------------------------------------------
-        public float AttackDuration => _attackDuration;
 		public float TimeBetweenAttacks => _timeBetweenAttacks; 
 		public int StartAmountOfAttacks => _startAmountOfAttacks; 
 		public float TimeUntilFirstIncrease => _increaseAttacksAfter; 
 		public float TimeUntilSecondIncrease => _increaseAttacksAgainAfter;
 		public float BeamScaleUpDuration => _beamScaleUpDuration;
-		public float WindUpTime => _windUpTime;
+		public float BeamWindUpTime => _beamWindUpTime;
+        public float BeamActiveDuration => _beamActiveDuration;
+		public float TotalBeamAttackDuration => _beamScaleUpDuration + _beamWindUpTime + _beamActiveDuration;
 
 
         public float StartDelay => _startDelay;

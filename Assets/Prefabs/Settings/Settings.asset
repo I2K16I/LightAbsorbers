@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2178adc093a9edc4484a0490930b1a2d, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  _attackDuration: 6
-  _beamScaleUpDuration: 1
-  _windUpTime: 1
+  _beamActiveDuration: 4
+  _beamScaleUpDuration: 0.5
+  _beamWindUpTime: 1
   _timeBetweenAttacks: 8
   _startAmountOfAttacks: 1
   _increaseAttacksAfter: 20
@@ -26,4 +26,5 @@ MonoBehaviour:
   _orbStartSpeed: 4
   _orbEndSpeed: 8
   _timeTillEndSpeed: 60
+  _updateFrequency: 1
   _orbSize: 1

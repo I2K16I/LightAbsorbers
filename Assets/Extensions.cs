@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace BSA
@@ -71,6 +73,19 @@ namespace BSA
         {
             yield return new WaitForSeconds(delay);
             action.Invoke();
+        }
+
+        public static T GetRandomElement<T>(this IEnumerable<T> collection)
+        {
+            if(collection == null)
+                throw new ArgumentNullException("Collection is NULL");
+
+            int count = collection.Count();
+            if(count == 0)
+                throw new ArgumentException("Can't pick from empty Collection.");
+
+            int index = UnityEngine.Random.Range(0, count);
+            return collection.ElementAt(index);
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------

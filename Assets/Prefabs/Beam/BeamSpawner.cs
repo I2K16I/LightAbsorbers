@@ -9,11 +9,12 @@ namespace BSA
 	public class BeamSpawner : MonoBehaviour
 	{
 		// --- Fields -------------------------------------------------------------------------------------------------
-		[SerializeField] private GameObject _beam;
+		[SerializeField] private Beam _beam;
 		[SerializeField] private int _maxNumberOfAttacks = 4;
 		
 		private Settings _settings;
 		private int _currentNumberOfAttacks = 0;
+
 		// --- Properties ---------------------------------------------------------------------------------------------
 		
 		// --- Events -------------------------------------------------------------------------------------------------
@@ -33,9 +34,9 @@ namespace BSA
 		{
 			if(_currentNumberOfAttacks <= _maxNumberOfAttacks)
 			{
-                GameObject newBeam = Instantiate(_beam);
-				newBeam.GetComponent<BeamManager>().SetNewProperties(pos1, pos2);
-				this.DoAfter(_settings.AttackDuration, EndOfAttack);
+                Beam newBeam = Instantiate(_beam);
+				newBeam.PerformAttack(pos1, pos2);
+				this.DoAfter(_settings.BeamActiveDuration, EndOfAttack);
 			}
 		}
 		// --- Protected/Private Methods ------------------------------------------------------------------------------

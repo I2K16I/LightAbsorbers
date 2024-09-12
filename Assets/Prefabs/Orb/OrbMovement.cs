@@ -1,9 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace BSA
 {
@@ -42,7 +38,6 @@ namespace BSA
             transform.Rotate(0f, rngRotation, 0f);
             _moveDirection = transform.forward;
             IsPaused = true;
-
         }
 
         private void FixedUpdate()

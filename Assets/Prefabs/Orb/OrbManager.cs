@@ -1,9 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace BSA
 {
@@ -11,12 +9,11 @@ namespace BSA
     {
         // --- Fields -------------------------------------------------------------------------------------------------
         [SerializeField] private bool _showSpawnRadius = true;
-        [SerializeField] private GameObject _prefab;
+        [SerializeField] private OrbMovement _prefab;
         [SerializeField] private float _spawnRadius = 1f;
         [SerializeField] private List<OuterOrb> _outerOrbs;
         [SerializeField] private BeamSpawner _beamSpawner;
 
-        private readonly List<int> attackList = new();
         private readonly List<OrbMovement> _orbs = new();
 
 
@@ -34,7 +31,7 @@ namespace BSA
             {
                 offset = new Vector3(Random.Range(-_spawnRadius, _spawnRadius), 0, Random.Range(-_spawnRadius, _spawnRadius));
                 spawnPosition += offset;
-                _orbs.Add(Instantiate(_prefab, spawnPosition, Quaternion.identity).GetComponent<OrbMovement>());
+                _orbs.Add(Instantiate(_prefab, spawnPosition, Quaternion.identity));
                 spawnPosition = transform.position;
             }
         }
@@ -61,21 +58,23 @@ namespace BSA
             }
         }
 
-        public void OrbAttack(float duration)
+        public void OrbAttack(float attackDuration)
         {
-            if(TrySelectOrbs(out OuterOrb orbOne, out OrbMovement orbTwo, out OuterOrb orbThree))
+            if(TrySelectOrbs(out OuterOrb outerOrbA, out OuterOrb outerOrbB, out OrbMovement innerOrb))
             {
-                orbTwo.PauseMovement();
-                orbOne.IsAlreadyAttacking = true;
-                orbThree.IsAlreadyAttacking = true;
-                orbOne.AttackId = attackList.Count;
-                orbThree.AttackId = attackList.Count;
-                attackList.Add(attackList.Count);
+                innerOrb.PauseMovement();
+                outerOrbA.IsAttacking = true;
+                outerOrbB.IsAttacking = true;
 
-                _beamSpawner.SpawnBeamAt(orbOne.transform, orbTwo.Center);
-                _beamSpawner.SpawnBeamAt(orbThree.transform, orbTwo.Center);
+                _beamSpawner.SpawnBeamAt(outerOrbA.transform, innerOrb.Center);
+                _beamSpawner.SpawnBeamAt(outerOrbB.transform, innerOrb.Center);
 
-                this.DoAfter(duration, () => EndOrbAttack(orbTwo));
+                this.DoAfter(attackDuration, () =>
+                {
+                    innerOrb.ResumeMovement();
+                    outerOrbA.IsAttacking = false;
+                    outerOrbB.IsAttacking = false;
+                });
             }
             else
             {
@@ -101,54 +100,45 @@ namespace BSA
             }
         }
 
-        private bool TrySelectOrbs(out OuterOrb orbOne, out OrbMovement orbTwo, out OuterOrb orbThree)
+        /// <summary>
+        /// Tries to select two <see cref="OuterOrb"/> and a single <see cref="OrbMovement"/> for performing an attack.
+        /// The outer orbs cannot already be attacking and cannot be adjacent.
+        /// The inner orb must still be moving.
+        /// Will return <c>false</c>, if these conditions cannot be met.
+        /// </summary>
+        /// <param name="outerOrbA">The first outer orb selected</param>
+        /// <param name="outerOrbB">The second outer orb selected</param>
+        /// <param name="innerOrb">The inner orb selected</param>
+        private bool TrySelectOrbs(out OuterOrb outerOrbA, out OuterOrb outerOrbB, out OrbMovement innerOrb)
         {
-            orbOne = null;
-            orbTwo = null;
-            orbThree = null;
-            int attempts = 0;
+            outerOrbA = null;
+            innerOrb = null;
+            outerOrbB = null;
 
-            for(int i = 0; i < 1; i++)
-            {
-                if(attempts == 30)
-                {
-                    Debug.LogWarning("Kein Orb gefunden");
-                    return false;
-                }
+            // Filter out all Orbs already attacking
+            List<OuterOrb> filteredOuterOrbs = _outerOrbs.Where(o => o.IsAttacking == false).ToList();
+            if(filteredOuterOrbs.Count < 2)
+                return false;
 
-                orbOne = _outerOrbs[Random.Range(0, _outerOrbs.Count - 1)];
-                orbThree = _outerOrbs[Random.Range(0, _outerOrbs.Count - 1)];
+            // Pick one at random
+            outerOrbA = filteredOuterOrbs.GetRandomElement();
+            filteredOuterOrbs.Remove(outerOrbA);
 
-                if(SameOrAdjacent(orbOne, orbThree))
-                {
-                    i--;
-                    attempts++;
-                }
-                else if(orbOne.IsAlreadyAttacking || orbThree.IsAlreadyAttacking)
-                {
-                    i--;
-                    attempts++;
-                }
-            }
+            // filter all orbs adjacent to the first pick
+            OuterOrb firstPick = outerOrbA;
+            filteredOuterOrbs = filteredOuterOrbs.Where(o => SameOrAdjacent(o, firstPick) == false).ToList();
+            if(filteredOuterOrbs.Count == 0)
+                return false;
 
+            // Pick second outer orb
+            outerOrbB = filteredOuterOrbs.GetRandomElement();
+
+            // Pick random flying unpaused orb
             OrbMovement[] unpausedOrbs = _orbs.Where(o => o.IsPaused == false).ToArray();
             if(unpausedOrbs.Length == 0)
-            {
                 return false;
-            }
 
-            orbTwo = unpausedOrbs[Random.Range(0, unpausedOrbs.Count() - 1)];
-
-            for(int i = 0; i < 1; i++)
-            {
-                if(orbTwo.IsPaused)
-                {
-                    i--;
-                }
-            }
-
-            orbOne.IsAlreadyAttacking = true;
-            orbThree.IsAlreadyAttacking = true;
+            innerOrb = unpausedOrbs.GetRandomElement();
             return true;
         }
 
@@ -158,26 +148,9 @@ namespace BSA
             int indexTwo = _outerOrbs.IndexOf(numTwo);
             int dif = Mathf.Abs(indexTwo - indexOne);
 
-            if(dif <= 1 || dif == _outerOrbs.Count - 1)
-            {
-                return true;
-            }
-            return false;
+            return dif <= 1 || dif == _outerOrbs.Count - 1;
         }
 
-        private void EndOrbAttack(OrbMovement orb)
-        {
-            orb.ResumeMovement();
-            int attackToEnd = attackList.ElementAt(0);
-
-            foreach(OuterOrb outerOrb in _outerOrbs.Where(orb => orb.AttackId == attackToEnd))
-            {
-                outerOrb.AttackId = -1;
-                outerOrb.IsAlreadyAttacking = false;
-            }
-
-            attackList.Remove(attackToEnd);
-        }
         // ----------------------------------------------------------------------------------------
     }
 }

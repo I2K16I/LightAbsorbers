@@ -1355,7 +1355,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _showSpawnRadius: 0
-  _prefab: {fileID: 5813698157321579206, guid: 62ded8e0e4105504995091e3d158cebc, type: 3}
+  _prefab: {fileID: 5790839024967838755, guid: 62ded8e0e4105504995091e3d158cebc, type: 3}
   _spawnRadius: 15
   _outerOrbs:
   - {fileID: 2057689878}
@@ -1931,7 +1931,7 @@ Transform:
   m_GameObject: {fileID: 536185344}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 20, z: 0}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4204,6 +4204,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _settings: {fileID: 11400000, guid: eee09f3d56a8c404588342cbfd80c76e, type: 2}
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 0
   _joinCamera: {fileID: 330585547}
   _gameCamera: {fileID: 456006582}
   _winningCamera: {fileID: 350386791}
@@ -4212,7 +4215,7 @@ MonoBehaviour:
   _playerInputManager: {fileID: 1283624629}
   _orbManager: {fileID: 355308442}
   _bannerManager: {fileID: 478778763}
-  _transitionManager: {fileID: 1918714174}
+  _UiManager: {fileID: 1918714174}
   _spawnPointsGame:
   - {fileID: 295431942}
   - {fileID: 2071848339}
@@ -7623,7 +7626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92ced92b393f220478c178c2449f4464, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _beam: {fileID: 4240886803163025724, guid: f2214087474e2e1478dcbbd441d438c0, type: 3}
+  _beam: {fileID: 1093839506249257722, guid: f2214087474e2e1478dcbbd441d438c0, type: 3}
   _maxNumberOfAttacks: 4
 --- !u!4 &1585532898
 Transform:

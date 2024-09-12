@@ -20,6 +20,7 @@ namespace BSA
 
         [Header("Settings")]
         [SerializeField] private Settings _settings;
+        [SerializeField] private LayerMask _layerMask;
 
         [Header("Camera and Transitions")]
         [SerializeField] private CinemachineVirtualCamera _joinCamera;
@@ -33,7 +34,7 @@ namespace BSA
         [SerializeField] private PlayerInputManager _playerInputManager;
         [SerializeField] private OrbManager _orbManager;
         [SerializeField] private BannerManager _bannerManager;
-        [SerializeField] private TransitionHandler _transitionManager;
+        [SerializeField] private TransitionHandler _UiManager;
         [SerializeField] private Transform[] _spawnPointsGame;
 
         private int _startAmountOfAttacks = 1;
@@ -210,13 +211,13 @@ namespace BSA
         public void DeviceLost(int playerNumber)
         {
             Time.timeScale = 0.0f;
-            _transitionManager.ShowDeviceLostScreen(playerNumber);
+            _UiManager.ShowDeviceLostScreen(playerNumber);
         }
 
         public void DeviceRegained()
         {
             Time.timeScale = 1.0f;
-            _transitionManager.HideDeviceLostScreen();
+            _UiManager.HideDeviceLostScreen();
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
@@ -228,7 +229,7 @@ namespace BSA
             _playerInputManager.DisableJoining();
             float transitionTime = _settings.TransitionTime;
 
-            _transitionManager.MoveFromJoinToGameScreen(transitionTime);
+            _UiManager.MoveFromJoinToGameScreen(transitionTime);
             yield return new WaitForSeconds(transitionTime / 2);
 
             _countdownBar.gameObject.SetActive(false);
@@ -270,11 +271,11 @@ namespace BSA
             {
                 for(int i = 0; i < _startAmountOfAttacks; i++)
                 {
-                    _orbManager.OrbAttack(_settings.AttackDuration);
+                    _orbManager.OrbAttack(_settings.TotalBeamAttackDuration);
                     yield return new WaitForSeconds(1f);
                 }
-                yield return new WaitForSeconds(_settings.TimeBetweenAttacks);
 
+                yield return new WaitForSeconds(_settings.TimeBetweenAttacks);
             }
         }
 
