@@ -1903,6 +1903,7 @@ Transform:
   - {fileID: 355308441}
   - {fileID: 2122460559}
   - {fileID: 790755530}
+  - {fileID: 2071848339}
   - {fileID: 536185345}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1931,12 +1932,11 @@ Transform:
   m_GameObject: {fileID: 536185344}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 24.23, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 295431942}
-  - {fileID: 2071848339}
   - {fileID: 1250680519}
   - {fileID: 1184440098}
   m_Father: {fileID: 527121416}
@@ -4210,7 +4210,7 @@ MonoBehaviour:
   _joinCamera: {fileID: 330585547}
   _gameCamera: {fileID: 456006582}
   _winningCamera: {fileID: 350386791}
-  _winningCameraOffset: {x: 0, y: 2.95, z: -3.8}
+  _winningCameraOffset: {x: 0, y: 4.5, z: -5.5}
   _countdownBar: {fileID: 580688763}
   _playerInputManager: {fileID: 1283624629}
   _orbManager: {fileID: 355308442}
@@ -4298,7 +4298,7 @@ MonoBehaviour:
         m_Flags: 0
       m_Flags: 0
     m_Reference: {fileID: 0}
-  m_PlayerPrefab: {fileID: 663341738775938701, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+  m_PlayerPrefab: {fileID: 4976914699092975033, guid: 28c6d18f102ee5b41a0cb485556abb9d,
     type: 3}
   m_SplitScreen: 0
   m_MaintainAspectRatioInSplitScreen: 0
@@ -15187,12 +15187,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2071848338}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 9, y: 2, z: -9}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 9, y: 1.5, z: -9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 536185345}
+  m_Father: {fileID: 527121416}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &2090823778
 Mesh:

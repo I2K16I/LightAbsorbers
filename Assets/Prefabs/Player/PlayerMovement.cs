@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 namespace BSA
 {
@@ -16,8 +17,13 @@ namespace BSA
         [SerializeField] private float _moveSpeed = 1f;
         [SerializeField] private float _gravity = 1f;
         [SerializeField] private float _turnTime = .5f;
-        [SerializeField] private MeshRenderer _renderer;
-
+        [SerializeField] private SkinnedMeshRenderer _capeRenderer;
+        [SerializeField] private SkinnedMeshRenderer _bodyRenderer;
+        [SerializeField] private MeshRenderer _headRenderer;
+        [SerializeField] private Light _light;
+        [SerializeField] private Cloth _cloth;
+        [SerializeField] private Transform _body;
+        [SerializeField] private Animator _animator;
         private Vector3 _moveDirection = Vector3.zero;
 
         private bool _canMove = false;
@@ -140,6 +146,8 @@ namespace BSA
         public void Hit()
         {
             IsAlive = false;
+            _animator.SetBool("isHit", true);
+            StartCoroutine(FloatToGroundRoutine());
             GameManager.Instance.CheckGameEnd();
             // Hier soll noch dem GameManager gesagt werden dass ein Spieler getroffen wurde
 
@@ -147,6 +155,7 @@ namespace BSA
 
         public void GameStart(Vector3 spawnPosition, float delay)
         {
+            _cloth.worldAccelerationScale = 0f;
             transform.position = spawnPosition;
             this.DoAfter(delay, AllowMovement);
             //Invoke(nameof(AllowMovement), delay);
@@ -161,14 +170,41 @@ namespace BSA
 
         public void ChangeMaterial()
         {
-            _renderer.material = Material;
+            Color temp = Material.GetColor("_ColorUp");
+            _capeRenderer.material.color = temp;
+            _headRenderer.material.color = temp;
+            _headRenderer.material.SetColor("_EMISSION", temp * 4);
+            _light.color = temp;
+            temp.a = 0.35f;
+            _bodyRenderer.material.color = temp;
         }
+
+
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private void AllowMovement()
         {
+            _cloth.worldAccelerationScale = 0.2f;
             _canMove = true;
         }        
+
+        private IEnumerator FloatToGroundRoutine()
+        {
+            double startTime = Time.timeAsDouble;
+            float deathAnimationLength = 3f;
+            Vector3 currentPos = _body.localPosition;
+            float y = currentPos.y;
+            float t = 0f;
+            while(t < 1f)
+            {
+                //Debug.Log(scalingSinceSeconds);
+                yield return null;
+                t = Mathf.Clamp01((float)(Time.timeAsDouble - startTime) / deathAnimationLength);
+                //scalingSinceSeconds += Time.deltaTime;
+                currentPos.y = Mathf.Lerp(y, y-1.2f, t);
+                _body.localPosition = currentPos;
+            }
+        }
 
         // ----------------------------------------------------------------------------------------
     }

@@ -7,6 +7,7 @@ using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace BSA
@@ -40,6 +41,8 @@ namespace BSA
         private int _startAmountOfAttacks = 1;
         private readonly List<PlayerMovement> _players = new();
         private Coroutine _startRoutineInsttance = null;
+        private bool _gameEnded = false;
+        private SceneManager _sceneManager;
 
         // --- Properties ---------------------------------------------------------------------------------------------
         public static GameManager Instance { get; private set; }
@@ -168,6 +171,13 @@ namespace BSA
 
             // Version E
 
+            if(_gameEnded)
+            {
+
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                return;
+            }
+
             _bannerManager.ColorBanner(player);
 
             if(_players.All(p => p.IsReady) && _players.Count(p => p.IsReady) > 1)
@@ -203,6 +213,7 @@ namespace BSA
                 _joinCamera.Priority = 0;
                 _gameCamera.Priority = 0;
                 winner.EndGame();
+                _gameEnded = true;
             }
 
             // Show victory screen or whatever
