@@ -20,7 +20,7 @@ MonoBehaviour:
     x: 672
     y: -190
     width: 696
-    height: 1827
+    height: 1847
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2241,7 +2241,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEngine.Vector3, UnityEngine.CoreModule, Version=0.0.0.0,
           Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"x":0.1788439154624939,"y":0.0,"z":0.7641509771347046}'
+      m_SerializableObject: '{"x":0.01450051087886095,"y":0.004449992906302214,"z":0.9433962106704712}'
     m_Space: 2147483647
   m_Property:
     name: Color

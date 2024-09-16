@@ -26,7 +26,7 @@ namespace BSA
         [SerializeField] private Animator _animator;
         private Vector3 _moveDirection = Vector3.zero;
 
-        private bool _canMove = false;
+        [SerializeField] private bool _canMove = false;
         private float _turnVelocity = 0.00f;
 
         // --- Properties ---------------------------------------------------------------------------------------------
