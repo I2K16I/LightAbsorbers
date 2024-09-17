@@ -63,6 +63,10 @@ namespace BSA
             {
                 player.Hit();
                 isReflected = false;
+            } else if (collision.gameObject.TryGetComponent(out Shockwave shockwave))
+            {
+                isReflected = false;
+                //TurnOrbDirection()
             }
             //else if (rb != null)
             //{

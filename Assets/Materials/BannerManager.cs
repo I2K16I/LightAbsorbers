@@ -10,6 +10,8 @@ namespace BSA
         public class PlayerMaterial
         {
             public Material material;
+            public Color capeColor;
+            public Color metalColor;
             public bool isInUse;
         }
 
@@ -39,6 +41,8 @@ namespace BSA
         {
             PlayerMaterial playerMaterial = _playerMaterials.First(pm => pm.isInUse == false);
             player.Material = playerMaterial.material;
+            player.CapeColor = playerMaterial.capeColor;
+            player.MetalColor = playerMaterial.metalColor;
             playerMaterial.isInUse = true;
             player.ChangeMaterial();
 

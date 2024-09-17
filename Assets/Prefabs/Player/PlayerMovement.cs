@@ -15,6 +15,8 @@ namespace BSA
         // --- Fields -------------------------------------------------------------------------------------------------
         [SerializeField] private CharacterController _controller;
         [SerializeField] private float _moveSpeed = 1f;
+        [Tooltip("This value is a multiplier for the move speed. If the ability slows you, set the value to >1.")]
+        [SerializeField] private float _abilityMoveSpeedMult = 0.5f;
         [SerializeField] private float _gravity = 1f;
         [SerializeField] private float _turnTime = .5f;
         [SerializeField] private SkinnedMeshRenderer _capeRenderer;
@@ -24,10 +26,12 @@ namespace BSA
         [SerializeField] private Cloth _cloth;
         [SerializeField] private Transform _body;
         [SerializeField] private Animator _animator;
+        [SerializeField] private float _minTimeForAbility = 1f;
         private Vector3 _moveDirection = Vector3.zero;
-
         [SerializeField] private bool _canMove = false;
         private float _turnVelocity = 0.00f;
+        private bool _performingAbility = false;
+        private float _moveMult = 1f;
 
         // --- Properties ---------------------------------------------------------------------------------------------
         // Getter property syntax
@@ -40,6 +44,8 @@ namespace BSA
         public int PositionId { get; set; } 
 
         public Material Material { get; set; }
+        public Color CapeColor { get; set; }
+        public Color MetalColor { get; set; }
 
         // --- Events -------------------------------------------------------------------------------------------------
 
@@ -59,7 +65,7 @@ namespace BSA
             // Móve
             if(_canMove)
             {
-                Vector3 movement = _moveDirection * (Time.fixedDeltaTime * _moveSpeed);
+                Vector3 movement = _moveDirection * (Time.fixedDeltaTime * _moveSpeed * _moveMult);
                 movement += Vector3.down * (_gravity * Time.fixedDeltaTime);
                 _controller.Move(movement);
             }
@@ -130,6 +136,24 @@ namespace BSA
             }
         }
 
+        public void OnAbility(InputAction.CallbackContext context)
+        {
+            //if(GameManager.Instance.GameRunning == false || IsAlive == false)
+            //    return;
+
+            if(context.performed)
+            {
+                _performingAbility = true;
+                _moveMult = _abilityMoveSpeedMult;
+                StartCoroutine(AbilityRoutine());
+            }
+            else if(context.canceled)
+            {
+                _moveMult = 1;
+                _performingAbility = false;
+            }
+        }
+
         public void OnDeviceLost()
         {
             GameManager.Instance.DeviceLost(PositionId);
@@ -171,8 +195,10 @@ namespace BSA
         public void ChangeMaterial()
         {
             Color temp = Material.GetColor("_ColorUp");
-            _capeRenderer.material.color = temp;
-            _headRenderer.material.color = temp;
+            _capeRenderer.material.SetColor("_Color", CapeColor);
+            _capeRenderer.material.SetColor("_MetalicColor", MetalColor);
+            //_capeRenderer.material.color = temp;
+            //_headRenderer.material.color = temp;
             _headRenderer.material.SetColor("_EMISSION", temp * 4);
             _light.color = temp;
             temp.a = 0.35f;
@@ -187,6 +213,27 @@ namespace BSA
             _cloth.worldAccelerationScale = 0.2f;
             _canMove = true;
         }        
+
+        private IEnumerator AbilityRoutine()
+        {
+            _animator.SetBool("AbilityCharging", true);
+            _animator.SetBool("AbilityCancel", false);
+
+            float time = 0f;
+
+            while(_performingAbility)
+            {
+                time += Time.deltaTime;
+                yield return null;
+            }
+
+
+            if(time < _minTimeForAbility)
+            {
+                _animator.SetBool("AbilityCancel", true);
+            }
+            _animator.SetBool("AbilityCharging", false);
+        }
 
         private IEnumerator FloatToGroundRoutine()
         {

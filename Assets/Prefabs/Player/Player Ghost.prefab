@@ -111,7 +111,7 @@ Transform:
   m_GameObject: {fileID: 670294041771924521}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.000126, z: 0.000050999955}
+  m_LocalPosition: {x: 0, y: 0.00011583009, z: 0.00005099999}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -145,7 +145,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bcb2a4762edb48d46929b452dd137a41, type: 2}
+  - {fileID: 2100000, guid: 35c04b209ead46942a00158f27637271, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6573,12 +6573,18 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.002
-  m_Height: 0.007
+  m_Height: 0.008
   m_Direction: 0
-  m_Center: {x: 0, y: -0.0015, z: 0}
+  m_Center: {x: 0, y: -0.0015, z: -0.0005}
 --- !u!4 &576851923968066369 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1f421f731b77f9d47932041ee722476d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1120229423633884330}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &2201438671054758540 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7996477077825681882, guid: 1f421f731b77f9d47932041ee722476d,
     type: 3}
   m_PrefabInstance: {fileID: 1120229423633884330}
   m_PrefabAsset: {fileID: 0}
@@ -6637,9 +6643,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.001
-  m_Height: 0.006
+  m_Height: 0.0055
   m_Direction: 1
-  m_Center: {x: 0, y: 0.002, z: 0}
+  m_Center: {x: 0, y: 0.0025, z: 0}
 --- !u!1 &3649927087669556371 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4408179475548590137, guid: 1f421f731b77f9d47932041ee722476d,
@@ -6695,9 +6701,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.001
-  m_Height: 0.006
+  m_Height: 0.0055
   m_Direction: 1
-  m_Center: {x: 0, y: 0.002, z: 0}
+  m_Center: {x: 0, y: 0.0025, z: 0}
 --- !u!4 &8230171465865840792 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -163066445757010894, guid: 1f421f731b77f9d47932041ee722476d,
@@ -6778,6 +6784,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 866932015727081656, guid: 90d63cdcf6329f34b8d59793b8ec3948,
         type: 3}
+      propertyPath: _bodyRenderer
+      value: 
+      objectReference: {fileID: 2201438671054758540}
+    - target: {fileID: 866932015727081656, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
       propertyPath: _capeRenderer
       value: 
       objectReference: {fileID: 1756356031557840538}
@@ -6844,7 +6855,7 @@ PrefabInstance:
     - target: {fileID: 5757225196589909408, guid: 90d63cdcf6329f34b8d59793b8ec3948,
         type: 3}
       propertyPath: m_Radius
-      value: 1.2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 5757225196589909408, guid: 90d63cdcf6329f34b8d59793b8ec3948,
         type: 3}
@@ -6860,6 +6871,56 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Center.z
       value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_ActionId
+      value: fafd617d-db1d-40e5-8da0-fc07a99fedc4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_ActionName
+      value: Player/Ability[/Keyboard/space,/DualShock4GamepadHID/buttonSouth,/XInputControllerWindows/buttonSouth,/Keyboard/enter]
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 4621487425676780428}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnAbility
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: BSA.PlayerMovement, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 6375391829320137021, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+        type: 3}
+      propertyPath: m_ActionEvents.Array.data[3].m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -6888,6 +6949,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5486831581751761716}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4621487425676780428 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 866932015727081656, guid: 90d63cdcf6329f34b8d59793b8ec3948,
+    type: 3}
+  m_PrefabInstance: {fileID: 5486831581751761716}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4976914699092975033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c729ff040f9f3ce46b3a010008cedb89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4976914699092975033 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 663341738775938701, guid: 90d63cdcf6329f34b8d59793b8ec3948,
