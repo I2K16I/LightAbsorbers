@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5790839024967838755}
   - component: {fileID: 7886814473799548170}
   - component: {fileID: 4435180108063750120}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Orb
   m_TagString: Orb
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidBody: {fileID: 7886814473799548170}
-  _moveSpeed: 5
+  _currentMoveSpeed: 1
   _center: {fileID: 5798964556683238216}
 --- !u!54 &7886814473799548170
 Rigidbody:
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 3358805899721755948}
   - component: {fileID: 6109627290993440106}
   - component: {fileID: 7846964141583870802}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BlobShadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -215,6 +215,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Glow
       objectReference: {fileID: 0}
+    - target: {fileID: 2959280552581839883, guid: 0678665b805efc249b4faa9cf3d652e1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3583459772604057227, guid: 0678665b805efc249b4faa9cf3d652e1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 4808824982870569694, guid: 0678665b805efc249b4faa9cf3d652e1,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -285,6 +295,16 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6265835080147359820, guid: 0678665b805efc249b4faa9cf3d652e1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6447556957685154084, guid: 0678665b805efc249b4faa9cf3d652e1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 8391400195087609311, guid: 0678665b805efc249b4faa9cf3d652e1,
         type: 3}
       propertyPath: prewarm
@@ -309,6 +329,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.a
       value: 0.039215688
+      objectReference: {fileID: 0}
+    - target: {fileID: 8698014975834287509, guid: 0678665b805efc249b4faa9cf3d652e1,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

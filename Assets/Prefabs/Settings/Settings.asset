@@ -22,9 +22,11 @@ MonoBehaviour:
   _startDelay: 1.5
   _transitionTime: 1
   _timeBetweenTransitionAndStart: 2
+  _playerDeathAnimationLength: 3
   _numberOfOrbs: 18
   _orbStartSpeed: 4
   _orbEndSpeed: 8
   _timeTillEndSpeed: 60
   _updateFrequency: 1
   _orbSize: 1
+  _invincibleMode: 1

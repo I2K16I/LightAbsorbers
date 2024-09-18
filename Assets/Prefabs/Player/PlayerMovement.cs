@@ -27,11 +27,19 @@ namespace BSA
         [SerializeField] private Transform _body;
         [SerializeField] private Animator _animator;
         [SerializeField] private float _minTimeForAbility = 1f;
-        private Vector3 _moveDirection = Vector3.zero;
         [SerializeField] private bool _canMove = false;
+        private Vector3 _moveDirection = Vector3.zero;
         private float _turnVelocity = 0.00f;
         private bool _performingAbility = false;
         private float _moveMult = 1f;
+
+
+        [Header("Ability")]
+        [SerializeField] private float _abilityCooldown = 5f;
+        private bool _isOnCooldown = false;
+        [SerializeField] private Shockwave _ability;
+        private Transform _abilityTransform;
+        [SerializeField] private Transform _abilitySpawnPoint;
 
         // --- Properties ---------------------------------------------------------------------------------------------
         // Getter property syntax
@@ -52,7 +60,7 @@ namespace BSA
         // --- Unity Functions ----------------------------------------------------------------------------------------
         private void Awake()
         {
-
+            _abilityTransform = _ability.transform;
         }
 
         private void FixedUpdate()
@@ -114,7 +122,7 @@ namespace BSA
 
         public void OnReady(InputAction.CallbackContext context)
         {
-            if(GameManager.Instance.GameRunning == false && context.performed)
+            if(GameManager.Instance.State == GameState.Preparation && context.performed)
             {
                 IsReady = true;
                 GameManager.Instance.CheckGameStart(this);
@@ -123,26 +131,33 @@ namespace BSA
     
         public void OnLeave(InputAction.CallbackContext context)
         {
-            if(context.performed)
+            if(context.performed == false)
             {
-                if(IsReady)
-                {
-                    IsReady = false;
-                    GameManager.Instance.CheckGameStart(this);
-                } else if(GameManager.Instance.GameRunning == false)
-                {
-                    Destroy(this.gameObject);
-                }
+                return;
+            }
+            if(GameManager.Instance.State != GameState.Preparation)
+            {
+                return;
+            }
+            if(IsReady)
+            {
+                IsReady = false;
+                GameManager.Instance.CheckGameStart(this);
+            }
+            else
+            {
+                Destroy(this.gameObject);
             }
         }
 
         public void OnAbility(InputAction.CallbackContext context)
         {
-            //if(GameManager.Instance.GameRunning == false || IsAlive == false)
-            //    return;
+            if(GameManager.Instance.State != GameState.Running || IsAlive == false || _isOnCooldown)
+                return;
 
             if(context.performed)
             {
+                //Debug.Log($"{name} started ability", this);
                 _performingAbility = true;
                 _moveMult = _abilityMoveSpeedMult;
                 StartCoroutine(AbilityRoutine());
@@ -169,9 +184,12 @@ namespace BSA
         // --- Public/Internal Methods --------------------------------------------------------------------------------
         public void Hit()
         {
+            if(GameManager.Settings.InvincibleMode)
+                return;
+
             IsAlive = false;
             _animator.SetBool("isHit", true);
-            StartCoroutine(FloatToGroundRoutine());
+            FloatToGround();
             GameManager.Instance.CheckGameEnd();
             // Hier soll noch dem GameManager gesagt werden dass ein Spieler getroffen wurde
 
@@ -195,11 +213,12 @@ namespace BSA
         public void ChangeMaterial()
         {
             Color temp = Material.GetColor("_ColorUp");
+            _ability.ChangeColor(temp);
             _capeRenderer.material.SetColor("_Color", CapeColor);
             _capeRenderer.material.SetColor("_MetalicColor", MetalColor);
             //_capeRenderer.material.color = temp;
             //_headRenderer.material.color = temp;
-            _headRenderer.material.SetColor("_EMISSION", temp * 4);
+            _headRenderer.material.SetColor("_EmissionColor", temp * 4);
             _light.color = temp;
             temp.a = 0.35f;
             _bodyRenderer.material.color = temp;
@@ -219,6 +238,11 @@ namespace BSA
             _animator.SetBool("AbilityCharging", true);
             _animator.SetBool("AbilityCancel", false);
 
+            _abilityTransform.parent = transform;
+            _abilityTransform.position = _abilitySpawnPoint.position;
+            _abilityTransform.forward = transform.forward;
+            _ability.AbilityPressed();
+
             float time = 0f;
 
             while(_performingAbility)
@@ -227,30 +251,34 @@ namespace BSA
                 yield return null;
             }
 
-
             if(time < _minTimeForAbility)
             {
                 _animator.SetBool("AbilityCancel", true);
+                _ability.AbilityCanceled();
+            } else
+            {
+                _isOnCooldown = true;
+                _ability.AbilityActivated();
+                this.DoAfter(_abilityCooldown, () => _isOnCooldown = false);
             }
             _animator.SetBool("AbilityCharging", false);
+
         }
 
-        private IEnumerator FloatToGroundRoutine()
+        private void FloatToGround()
         {
-            double startTime = Time.timeAsDouble;
-            float deathAnimationLength = 3f;
+
             Vector3 currentPos = _body.localPosition;
             float y = currentPos.y;
-            float t = 0f;
-            while(t < 1f)
+
+            this.AutoLerp(y, y - 1.2f, GameManager.Settings.PlayerDeathAnimationLength, FloatDown);
+
+            void FloatDown(float yPos)
             {
-                //Debug.Log(scalingSinceSeconds);
-                yield return null;
-                t = Mathf.Clamp01((float)(Time.timeAsDouble - startTime) / deathAnimationLength);
-                //scalingSinceSeconds += Time.deltaTime;
-                currentPos.y = Mathf.Lerp(y, y-1.2f, t);
+                currentPos.y = yPos;
                 _body.localPosition = currentPos;
             }
+
         }
 
         // ----------------------------------------------------------------------------------------

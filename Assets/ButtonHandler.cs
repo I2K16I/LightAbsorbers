@@ -30,7 +30,6 @@ namespace BSA
 		// --- Public/Internal Methods --------------------------------------------------------------------------------
 		public void OnStartClick()
 		{
-			Debug.Log("Test");
 			_transitionManager.MoveFromMainMenuToGame(1f);
 			this.DoAfter(1f, LoadGame);
 		}

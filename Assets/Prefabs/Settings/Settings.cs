@@ -33,6 +33,7 @@ namespace BSA
         [SerializeField] private float _transitionTime = 1f;
         [Tooltip("This value represents the number of seconds before the players can start moving after the transition is done")]
         [SerializeField] private float _timeBetweenTransitionAndStart = 2f;
+		[SerializeField] private float _playerDeathAnimationLength = 3f;
 
 		[Header("Orb Settings")]
 		[SerializeField] private int _numberOfOrbs = 8;
@@ -42,6 +43,9 @@ namespace BSA
 		[Tooltip("The time between speed increses. 1 meaning once a second. Lower then 1 means more than once a second, highter means less than one time a second.")]
 		[SerializeField] private float _updateFrequency = 1f;
         [SerializeField] private float _orbSize = 1f;
+
+		[Header("Debug Settings")]
+        [SerializeField] private bool _invincibleMode = false;
 
         // --- Properties ---------------------------------------------------------------------------------------------
 		public float TimeBetweenAttacks => _timeBetweenAttacks; 
@@ -57,6 +61,7 @@ namespace BSA
         public float StartDelay => _startDelay;
 		public float TransitionTime => _transitionTime;
 		public float TimeBetweenTransitionAndStart => _timeBetweenTransitionAndStart;
+		public float PlayerDeathAnimationLength => _playerDeathAnimationLength;
 
 		public int NumberOfOrbs => _numberOfOrbs;
 		public float OrbStartSpeed => _orbStartSpeed;
@@ -64,6 +69,8 @@ namespace BSA
 		public float TimeTillEndSpeed => _timeTillEndSpeed;
 		public float UpdateFrequency => _updateFrequency;
 		public float OrbSize => _orbSize;
+
+		public bool InvincibleMode => _invincibleMode;
 
 		// --- Events -------------------------------------------------------------------------------------------------
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 namespace BSA
 {
@@ -15,8 +16,9 @@ namespace BSA
         private Settings _settings;
         private float _startSpeed;
         private float _endSpeed;
+        private float _speedMult = 1f;
         private float _timeTillEndSpeed;
-        private float _updateFrequency;
+
 
         // --- Properties ---------------------------------------------------------------------------------------------
         public bool IsPaused { get; private set; }
@@ -32,12 +34,12 @@ namespace BSA
             _endSpeed = _settings.OrbEndSpeed;
             _timeTillEndSpeed = _settings.TimeTillEndSpeed;
             _currentMoveSpeed = _startSpeed;
-            _updateFrequency = _settings.UpdateFrequency;
 
-            float rngRotation = Random.Range(0f, 360f);
-            transform.Rotate(0f, rngRotation, 0f);
-            _moveDirection = transform.forward;
+            _moveDirection = new Vector3(Random.Range(0f, 1f), 0, Random.Range(0f, 1f));
+            _moveDirection.Normalize();
             IsPaused = true;
+
+            //_moveDirection = transform.forward;
         }
 
         private void FixedUpdate()
@@ -49,7 +51,7 @@ namespace BSA
             }
             _moveDirection.y = 0f;
             //transform.position += _moveDirection * Time.fixedDeltaTime * _moveSpeed;
-            _rigidBody.velocity = _moveDirection * _currentMoveSpeed;
+            _rigidBody.velocity = _moveDirection * _currentMoveSpeed * _speedMult;
             Debug.DrawRay(transform.position, _moveDirection * 2f, Color.red);
         }
 
@@ -104,8 +106,18 @@ namespace BSA
 
         public void StartOrb()
         {
+            Debug.Log("Orb started");
             IsPaused = false;
-            StartCoroutine(IncreaseSpeedRoutine());
+            this.AutoLerp(_startSpeed, _endSpeed, _timeTillEndSpeed, speed => _currentMoveSpeed = speed);
+        }
+
+        public void Reflect(Vector3 direction)
+        {
+            direction.y = 0;
+            _speedMult = 2f;
+            this.AutoLerp(_speedMult, 1, 3f, reducedSpeed => _speedMult = reducedSpeed);
+            _moveDirection = direction;
+
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
@@ -118,17 +130,6 @@ namespace BSA
             _moveDirection = Quaternion.Euler(0f, 2f * angle, 0f) * -_moveDirection;
         }
 
-        private IEnumerator IncreaseSpeedRoutine()
-        {
-            float timeSinceStart = 0f;
-            while(timeSinceStart < _timeTillEndSpeed)
-            {
-                timeSinceStart += _updateFrequency;
-                _currentMoveSpeed = Mathf.Lerp(_startSpeed, _endSpeed, timeSinceStart/_timeTillEndSpeed);
-                yield return new WaitForSeconds(_updateFrequency);
-            }
-            _currentMoveSpeed = _endSpeed;
-        }
         // ----------------------------------------------------------------------------------------
     }
 }

@@ -17,7 +17,7 @@ namespace BSA
     public static class Extensions
     {
         // --- Fields -------------------------------------------------------------------------------------------------
-
+        
 
         // --- Properties ---------------------------------------------------------------------------------------------
 
@@ -88,7 +88,51 @@ namespace BSA
             return collection.ElementAt(index);
         }
 
+        public static Coroutine AutoLerp(this MonoBehaviour mono, float from, float to, float duration, Action<float> assign, EasingType easing = EasingType.Linear)
+        {
+            return mono.StartCoroutine(AutoLerpRoutine(from, to, duration, assign, easing));
+        }
+
         // --- Protected/Private Methods ------------------------------------------------------------------------------
+        private static IEnumerator AutoLerpRoutine(float from, float to, float duration, Action<float> assign, EasingType easing = EasingType.Linear)
+        {
+            double startTime = Time.timeAsDouble;
+            float t = 0f;
+
+            float value = from;
+            assign(value);
+
+            while(t < 1f)
+            {
+                yield return null;
+                t = Mathf.Clamp01((float)(Time.timeAsDouble - startTime) / duration);
+                t = Ease(t, easing);
+                value = Mathf.Lerp(from, to, t);
+                assign(value);
+            }
+        }
+
+        private static float Ease(float t, EasingType easingType)
+        {
+            switch(easingType)
+            {
+                case EasingType.Linear:
+                    break;
+                case EasingType.Smooth:
+                    t = t * t * (3f - 2f * t);
+                    break;
+                case EasingType.Smoother:
+                    t = t * t * t * (t * (6.0f * t - 15.0f) + 10.0f);
+                    break;
+                case EasingType.EasyInOutSine:
+                    t = -(Mathf.Cos(Mathf.PI * t) - 1) / 2;
+                    break;
+                case EasingType.EasyOutSine:
+                    t = Mathf.Sin((t * Mathf.PI) / 2);
+                    break;
+            }
+            return t;
+        }
 
         // ----------------------------------------------------------------------------------------
     }

@@ -90,18 +90,24 @@ namespace BSA
             Vector2 max = new Vector2(0, 1);
             screen.anchorMin = min;
             screen.anchorMax = max;
-            float timeSinceTransitionStart = 0f;
-            while(timeSinceTransitionStart < duration)
-            {
-                timeSinceTransitionStart += Time.deltaTime;
-                min.x = Mathf.Lerp(-1, 0, timeSinceTransitionStart / duration);
-                max.x = Mathf.Lerp(0, 1, timeSinceTransitionStart / duration);
-                screen.anchorMin = min;
-                screen.anchorMax = max;
-                yield return null;
-            }
+
+            this.AutoLerp(min.x, min.x + 1, duration, SetAnchorMin);
+            yield return this.AutoLerp(max.x, max.x +1, duration, SetAnchorMax);
+
             screen.anchorMin = new Vector2(0, 0);
             screen.anchorMax = new Vector2(1, 1);
+
+            void SetAnchorMin(float minimum)
+            {
+                min.x = minimum;
+                screen.anchorMin = min;
+
+            }
+            void SetAnchorMax(float maximum)
+            {
+                max.x = maximum;
+                screen.anchorMax = max;
+            }
         }
 
         private IEnumerator FadeRoutine(float duration, Image fade)
@@ -109,15 +115,16 @@ namespace BSA
             fade.gameObject.SetActive(true);
             yield return new WaitForSeconds(1f);
             fade.color = Color.black;
-            float timeSinceTransitionStart = 0f;
-            while (timeSinceTransitionStart < duration)
-            {
-                timeSinceTransitionStart += Time.deltaTime;
-                fade.color = new Color(0,0,0, Mathf.Lerp(1, 0, timeSinceTransitionStart/duration));
-                yield return null;
-            }
+
+            yield return this.AutoLerp(1, 0, duration, SetAlphaValue);
+
             fade.color = new Color(0, 0, 0, 0);
             fade.gameObject.SetActive(false);
+
+            void SetAlphaValue(float alpha)
+            {
+                fade.color = new Color(0,0,0,alpha);
+            }
         }
 
         // ----------------------------------------------------------------------------------------

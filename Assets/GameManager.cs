@@ -38,11 +38,16 @@ namespace BSA
         [SerializeField] private TransitionHandler _UiManager;
         [SerializeField] private Transform[] _spawnPointsGame;
 
-        private int _startAmountOfAttacks = 1;
+        private int _consecutiveOrbAttacks = 1;
         private readonly List<PlayerMovement> _players = new();
-        private Coroutine _startRoutineInsttance = null;
-        private bool _gameEnded = false;
+        private Coroutine _startRoutineInstance = null;
+        private Coroutine _increaseAttacksRoutine = null;
         private SceneManager _sceneManager;
+
+        [Header("Debugging")]
+        [SerializeField] private bool _isInTestScene = false;
+        [SerializeField] private bool _canStartSolo = false;
+
 
         // --- Properties ---------------------------------------------------------------------------------------------
         public static GameManager Instance { get; private set; }
@@ -50,7 +55,7 @@ namespace BSA
         public static Settings Settings => Instance._settings;
         public int PlayerCount { get { return _players.Count; } }
 
-        public bool GameRunning { get; private set; } = false;
+        public GameState State { get; private set; } = GameState.None;
 
         // --- Events -------------------------------------------------------------------------------------------------
 
@@ -66,10 +71,15 @@ namespace BSA
 
             Instance = this;
 
+            State = GameState.Preparation;
+
             _playerInputManager.onPlayerJoined += OnPlayerJoined;
             _playerInputManager.onPlayerLeft += OnPlayerLeft;
-            _startAmountOfAttacks = _settings.StartAmountOfAttacks;
-            UpdateCameras();
+            _consecutiveOrbAttacks = _settings.StartAmountOfAttacks;
+            if(_isInTestScene == false)
+            {
+                UpdateCameras();
+            }
         }
 
         private void OnDestroy()
@@ -86,6 +96,7 @@ namespace BSA
             int index = _players.Count;
             PlayerMovement movement = player.GetComponent<PlayerMovement>();
             movement.PositionId = index;
+            player.name = $"Player_{index:00}";
 
             _bannerManager.PlayerJoined(movement);
             _players.Add(movement);
@@ -98,13 +109,18 @@ namespace BSA
             _players.Remove(movement);
             //Destroy(movement.gameObject);
 
-            if(GameRunning)
+            switch(State)
             {
-                CheckGameEnd();
-            }
-            else
-            {
-                _bannerManager.PlayerLeft(movement);
+                case GameState.Preparation:
+                    _bannerManager.PlayerLeft(movement);
+                    break;
+
+                case GameState.Running:
+                    CheckGameEnd();
+                    break;
+
+                case GameState.Finished:
+                    break;
             }
         }
 
@@ -171,29 +187,30 @@ namespace BSA
 
             // Version E
 
-            if(_gameEnded)
+            if(State == GameState.Finished)
             {
-
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 return;
             }
 
             _bannerManager.ColorBanner(player);
 
-            if(_players.All(p => p.IsReady) && _players.Count(p => p.IsReady) > 1)
+            if(_players.All(p => p.IsReady))
             {
-                _countdownBar.gameObject.SetActive(true);
-                _countdownBar.value = 0.0f;
-                StartCoroutine(FillProgressBarRoutine());
-                _startRoutineInsttance = StartCoroutine(StartGameCoroutine());
+                if(_players.Count(p => p.IsReady) > 1 || _canStartSolo)
+                {
+                    _countdownBar.gameObject.SetActive(true);
+                    this.AutoLerp(0f, 1f, _settings.StartDelay, fill => _countdownBar.value = fill, EasingType.Smoother);
+                    _startRoutineInstance = StartCoroutine(StartGameCoroutine());
+                }
             }
             else
             {
                 _countdownBar.gameObject.SetActive(false);
-                if(_startRoutineInsttance != null)
+                if(_startRoutineInstance != null)
                 {
-                    StopCoroutine(_startRoutineInsttance);
-                    _startRoutineInsttance = null;
+                    StopCoroutine(_startRoutineInstance);
+                    _startRoutineInstance = null;
                 }
             }
         }
@@ -206,17 +223,18 @@ namespace BSA
             {
                 PlayerMovement winner = alivePlayers.First();
 
-                GameRunning = false;
-                _orbManager.EndGame();
-                _winningCamera.gameObject.transform.position = winner.transform.position + _winningCameraOffset;
-                _winningCamera.Priority = 11;
-                _joinCamera.Priority = 0;
-                _gameCamera.Priority = 0;
-                winner.EndGame();
-                _gameEnded = true;
-            }
+                if(_increaseAttacksRoutine != null)
+                {
+                    StopCoroutine(_increaseAttacksRoutine);
+                }
 
-            // Show victory screen or whatever
+                State = GameState.Finished;
+                _orbManager.EndGame();
+                _winningCamera.transform.position = winner.transform.position + _winningCameraOffset;
+                UpdateCameras();
+                winner.EndGame();
+                // Show victory screen or whatever
+            }
         }
 
         public void DeviceLost(int playerNumber)
@@ -236,7 +254,7 @@ namespace BSA
         private IEnumerator StartGameCoroutine()
         {
             yield return new WaitForSeconds(_settings.StartDelay);
-            GameRunning = true;
+            State = GameState.Running;
             _playerInputManager.DisableJoining();
             float transitionTime = _settings.TransitionTime;
 
@@ -255,58 +273,54 @@ namespace BSA
 
             yield return new WaitForSeconds(transitionTime / 2);
 
-            this.DoAfter(_settings.TimeUntilFirstIncrease, IncreaseNumberOfAttacks);
-            this.DoAfter(_settings.TimeUntilFirstIncrease + _settings.TimeUntilSecondIncrease, IncreaseNumberOfAttacks);
-            this.DoAfter(timeBetweenTransitonAndGameStart, _orbManager.StartOrbs);
-            float combinedTime = timeBetweenTransitonAndGameStart + _settings.TimeBetweenAttacks;
-            this.DoAfter(combinedTime, () => StartCoroutine(StartRecurringOrbAttacks()));
+            yield return new WaitForSeconds(timeBetweenTransitonAndGameStart);
+            _orbManager.StartOrbs();
+
+            _increaseAttacksRoutine = StartCoroutine(IncreaseAttacksRoutine());
+            StartCoroutine(StartRecurringOrbAttacks());
+        }
+
+        private IEnumerator IncreaseAttacksRoutine()
+        {
+            yield return new WaitForSeconds(_settings.TimeUntilFirstIncrease);
+            _consecutiveOrbAttacks++;
+            yield return new WaitForSeconds(_settings.TimeUntilSecondIncrease);
+            _consecutiveOrbAttacks++;
+            _increaseAttacksRoutine = null;
         }
 
         private void UpdateCameras()
         {
-            if(GameRunning)
+            _joinCamera.Priority = 0;
+            _gameCamera.Priority = 0;
+            _winningCamera.Priority = 0;
+
+            switch(State)
             {
-                _gameCamera.Priority = 10;
-                _joinCamera.Priority = 0;
-            }
-            else
-            {
-                _gameCamera.Priority = 0;
-                _joinCamera.Priority = 10;
+                case GameState.Preparation:
+                    _joinCamera.Priority = 10;
+                    break;
+                case GameState.Running:
+                    _gameCamera.Priority = 10;
+                    break;
+                case GameState.Finished:
+                    _winningCamera.Priority = 10;
+                    break;
             }
         }
 
         private IEnumerator StartRecurringOrbAttacks()
         {
-            while(GameRunning)
+            while(State == GameState.Running)
             {
-                for(int i = 0; i < _startAmountOfAttacks; i++)
+                yield return new WaitForSeconds(_settings.TimeBetweenAttacks);
+
+                for(int i = 0; i < _consecutiveOrbAttacks; i++)
                 {
                     _orbManager.OrbAttack(_settings.TotalBeamAttackDuration);
                     yield return new WaitForSeconds(1f);
                 }
-
-                yield return new WaitForSeconds(_settings.TimeBetweenAttacks);
             }
-        }
-
-        private IEnumerator FillProgressBarRoutine()
-        {
-            float timeSpentFillingBar = 0f;
-            float startDelay = _settings.StartDelay;
-
-            while(timeSpentFillingBar < startDelay)
-            {
-                timeSpentFillingBar += Time.deltaTime;
-                _countdownBar.value = Mathf.Lerp(0, 1, timeSpentFillingBar / startDelay);
-                yield return null;
-            }
-            _countdownBar.value = 1;
-        }
-
-        private void IncreaseNumberOfAttacks()
-        {
-            _startAmountOfAttacks++;
         }
 
         // ----------------------------------------------------------------------------------------
