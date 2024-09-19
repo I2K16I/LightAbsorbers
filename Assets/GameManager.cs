@@ -1,11 +1,8 @@
 using Cinemachine;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro.EditorUtilities;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -23,28 +20,22 @@ namespace BSA
         [SerializeField] private Settings _settings;
 
         [Header("Camera and Transitions")]
-        [SerializeField] private CinemachineVirtualCamera _joinCamera;
-        [SerializeField] private CinemachineVirtualCamera _gameCamera;
-        [SerializeField] private CinemachineVirtualCamera _winningCamera;
         [SerializeField] private Vector3 _winningCameraOffset;
         [Tooltip("Place the Countdown Slider here, it's used to show the player how long everyone has to be ready before the round starts")]
         [SerializeField] private Slider _countdownBar;
 
         [Header("Managers & Spawnpoints")]
         [SerializeField] private PlayerInputManager _playerInputManager;
-        [SerializeField] private OrbManager _orbManager;
         [SerializeField] private BannerManager _bannerManager;
-        [SerializeField] private TransitionHandler _UiManager;
-        [SerializeField] private Transform[] _spawnPointsGame;
 
+        private Transform[] _spawnPointsGame = new Transform[4];
         private int _consecutiveOrbAttacks = 1;
         private readonly List<PlayerMovement> _players = new();
         private Coroutine _startRoutineInstance = null;
         private Coroutine _increaseAttacksRoutine = null;
-        private SceneManager _sceneManager;
+
 
         [Header("Debugging")]
-        [SerializeField] private bool _isInTestScene = false;
         [SerializeField] private bool _canStartSolo = false;
 
 
@@ -53,7 +44,10 @@ namespace BSA
 
         public static Settings Settings => Instance._settings;
         public int PlayerCount { get { return _players.Count; } }
-
+        public CinemachineVirtualCamera Camera { get; set; }
+        public CinemachineVirtualCamera WinningCamera { get; set; }
+        public OrbManager OrbManager { get; set; }
+        public TransitionHandler TransitionHandler { get; set; }
         public GameState State { get; private set; } = GameState.None;
 
         // --- Events -------------------------------------------------------------------------------------------------
@@ -76,9 +70,22 @@ namespace BSA
             _playerInputManager.onPlayerJoined += OnPlayerJoined;
             _playerInputManager.onPlayerLeft += OnPlayerLeft;
             _consecutiveOrbAttacks = _settings.StartAmountOfAttacks;
-            
-            //UpdateCameras();
-            
+
+            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+        }
+
+        private void OnActiveSceneChanged(Scene oldScene, Scene newScene)
+        {
+            if(CameraCollector.TryGetCamera(CameraType.Join, out CameraCollector mainCam)
+                || CameraCollector.TryGetCamera(CameraType.Game, out mainCam))
+            {
+                Camera = mainCam.Camera;
+            }
+
+            if(CameraCollector.TryGetCamera(CameraType.Win, out CameraCollector winCam))
+            {
+                WinningCamera = winCam.Camera;
+            }
         }
 
         private void OnDestroy()
@@ -96,6 +103,7 @@ namespace BSA
             PlayerMovement movement = player.GetComponent<PlayerMovement>();
             movement.PositionId = index;
             player.name = $"Player_{index:00}";
+            DontDestroyOnLoad(movement.gameObject);
 
             _bannerManager.PlayerJoined(movement);
             _players.Add(movement);
@@ -186,12 +194,6 @@ namespace BSA
 
             // Version E
 
-            if(State == GameState.Finished)
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                return;
-            }
-
             _bannerManager.ColorBanner(player);
 
             if(_players.All(p => p.IsReady))
@@ -200,7 +202,7 @@ namespace BSA
                 {
                     _countdownBar.gameObject.SetActive(true);
                     this.AutoLerp(0f, 1f, _settings.StartDelay, fill => _countdownBar.value = fill, EasingType.Smoother);
-                    _startRoutineInstance = StartCoroutine(StartGameCoroutine());
+                    _startRoutineInstance = StartCoroutine(MoveToGameScene());
                 }
             }
             else
@@ -228,43 +230,82 @@ namespace BSA
                 }
 
                 State = GameState.Finished;
-                _orbManager.EndGame();
-                _winningCamera.transform.position = winner.transform.position + _winningCameraOffset;
+                OrbManager.EndGame();
+                WinningCamera.transform.position = winner.transform.position + _winningCameraOffset;
                 UpdateCameras();
                 winner.EndGame();
                 // Show victory screen or whatever
             }
         }
 
+        public void AddSpawnPoint(int index, Transform newSpawnpoint)
+        {
+            _spawnPointsGame[index] = newSpawnpoint;
+            if(_spawnPointsGame.Where(p => p != null).ToList().Count == _spawnPointsGame.Length)
+            {
+                StartCoroutine(StartGame());
+            }
+        }
+
+
         public void DeviceLost(int playerNumber)
         {
             Time.timeScale = 0.0f;
-            _UiManager.ShowDeviceLostScreen(playerNumber);
+            TransitionHandler.ShowDeviceLostScreen(playerNumber);
         }
 
         public void DeviceRegained()
         {
             Time.timeScale = 1.0f;
-            _UiManager.HideDeviceLostScreen();
+            TransitionHandler.HideDeviceLostScreen();
+        }
+
+        public void RestartGame()
+        {
+            for(int i = 0; i < _spawnPointsGame.Length; i++)
+            {
+                _spawnPointsGame[i] = null;
+            }
+            foreach(PlayerMovement player in _players) { player.ResetStatus(); }
+            _consecutiveOrbAttacks = 1;
+            State = GameState.Running;
+            float transitionTime = _settings.TransitionTime / 2;
+            TransitionHandler.SwtichFromScene(transitionTime / 2);
+            this.DoAfter(transitionTime, () => SceneManager.LoadScene(2));
+        }
+
+        public void ReturnToMain()
+        {
+            SceneManager.MoveGameObjectToScene(this.gameObject, SceneManager.GetActiveScene());
+            _players.ForEach(p => { SceneManager.MoveGameObjectToScene(p.gameObject, SceneManager.GetActiveScene()); });
+            State = GameState.None;
+            float transitionTime = _settings.TransitionTime / 2;
+            TransitionHandler.SwtichFromScene(transitionTime / 2);
+            this.DoAfter(transitionTime, () => SceneManager.LoadScene(0));
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
 
-        private IEnumerator StartGameCoroutine()
+        private IEnumerator MoveToGameScene()
         {
             yield return new WaitForSeconds(_settings.StartDelay);
             State = GameState.Running;
             _playerInputManager.DisableJoining();
             float transitionTime = _settings.TransitionTime;
 
-            _UiManager.MoveFromJoinToGameScreen(transitionTime);
+            TransitionHandler.SwtichFromScene(transitionTime / 2);
             yield return new WaitForSeconds(transitionTime / 2);
 
             _countdownBar.gameObject.SetActive(false);
-            UpdateCameras();
-            _bannerManager.DisableCloths();
+            SceneManager.LoadScene(2);
+            //UpdateCameras();
+            //_bannerManager.DisableCloths();
+        }
 
+        private IEnumerator StartGame()
+        {
             float timeBetweenTransitonAndGameStart = _settings.TimeBetweenTransitionAndStart;
+            float transitionTime = _settings.TransitionTime;
 
             for(int i = 0; i < _players.Count; i++)
             {
@@ -274,7 +315,7 @@ namespace BSA
             yield return new WaitForSeconds(transitionTime / 2);
 
             yield return new WaitForSeconds(timeBetweenTransitonAndGameStart);
-            _orbManager.StartOrbs();
+            OrbManager.StartOrbs();
 
             _increaseAttacksRoutine = StartCoroutine(IncreaseAttacksRoutine());
             StartCoroutine(StartRecurringOrbAttacks());
@@ -291,20 +332,22 @@ namespace BSA
 
         private void UpdateCameras()
         {
-            _joinCamera.Priority = 0;
-            _gameCamera.Priority = 0;
-            _winningCamera.Priority = 0;
+            Camera.Priority = 0;
+            if(WinningCamera != null)
+            {
+                WinningCamera.Priority = 0;
+            }
 
             switch(State)
             {
-                case GameState.Preparation:
-                    _joinCamera.Priority = 10;
-                    break;
                 case GameState.Running:
-                    _gameCamera.Priority = 10;
+                    Camera.Priority = 10;
                     break;
                 case GameState.Finished:
-                    _winningCamera.Priority = 10;
+                    if(WinningCamera != null)
+                    {
+                        WinningCamera.Priority = 10;
+                    }
                     break;
             }
         }
@@ -317,7 +360,7 @@ namespace BSA
 
                 for(int i = 0; i < _consecutiveOrbAttacks; i++)
                 {
-                    _orbManager.OrbAttack(_settings.TotalBeamAttackDuration);
+                    OrbManager.OrbAttack(_settings.TotalBeamAttackDuration);
                     yield return new WaitForSeconds(1f);
                 }
             }

@@ -12,7 +12,7 @@ namespace BSA
 	{
 		// --- Fields -------------------------------------------------------------------------------------------------
 		[SerializeField] private TransitionHandler _transitionManager;
-		private SceneManager _sceneManager;
+
 		// --- Properties ---------------------------------------------------------------------------------------------
 		
 		// --- Events -------------------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ namespace BSA
 		// --- Unity Functions ----------------------------------------------------------------------------------------
 		private void Awake()
 		{
-			_sceneManager = new SceneManager();
+
 		}		
 
 		// --- Interface implementations ------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ namespace BSA
 		// --- Public/Internal Methods --------------------------------------------------------------------------------
 		public void OnStartClick()
 		{
-			_transitionManager.MoveFromMainMenuToGame(1f);
+			_transitionManager.SwtichFromScene(1f);
 			this.DoAfter(1f, LoadGame);
 		}
 

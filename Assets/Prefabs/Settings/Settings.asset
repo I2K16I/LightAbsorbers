@@ -23,7 +23,7 @@ MonoBehaviour:
   _transitionTime: 1
   _timeBetweenTransitionAndStart: 2
   _playerDeathAnimationLength: 3
-  _numberOfOrbs: 18
+  _numberOfOrbs: 16
   _orbStartSpeed: 4
   _orbEndSpeed: 8
   _timeTillEndSpeed: 60

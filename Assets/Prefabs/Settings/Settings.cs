@@ -36,6 +36,7 @@ namespace BSA
 		[SerializeField] private float _playerDeathAnimationLength = 3f;
 
 		[Header("Orb Settings")]
+		[Range(0f, 16f)]
 		[SerializeField] private int _numberOfOrbs = 8;
 		[SerializeField] private float _orbStartSpeed = 1f;
 		[SerializeField] private float _orbEndSpeed = 3f;

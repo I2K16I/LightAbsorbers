@@ -32,7 +32,10 @@ namespace BSA
         private float _turnVelocity = 0.00f;
         private bool _performingAbility = false;
         private float _moveMult = 1f;
-
+        private float _defaultTurnTime = 0.1f;
+        private Vector3 _defaultLocalBodyPos;
+        private Vector3 _spawnPosition = Vector3.zero;
+        private Coroutine _floatToGroundRoutine = null;
 
         [Header("Ability")]
         [SerializeField] private float _abilityCooldown = 5f;
@@ -49,7 +52,7 @@ namespace BSA
         public bool IsReady { get; private set; } = false;
         public bool IsAlive { get; private set; } = true;
         public int MaterialId { get; set; }
-        public int PositionId { get; set; } 
+        public int PositionId { get; set; }
 
         public Color MainColor { get; set; }
         public Color CapeColor { get; set; }
@@ -120,33 +123,43 @@ namespace BSA
             //}
         }
 
+
         public void OnReady(InputAction.CallbackContext context)
         {
-            if(GameManager.Instance.State == GameState.Preparation && context.performed)
+            if((GameManager.Instance.State == GameState.Preparation))
             {
-                IsReady = true;
-                GameManager.Instance.CheckGameStart(this);
+                if(context.performed)
+                {
+                    IsReady = true;
+                    GameManager.Instance.CheckGameStart(this);
+                }
             }
+            else if(GameManager.Instance.State == GameState.Finished)
+            {
+                GameManager.Instance.RestartGame();
+            }
+
         }
-    
+
         public void OnLeave(InputAction.CallbackContext context)
         {
             if(context.performed == false)
-            {
                 return;
-            }
-            if(GameManager.Instance.State != GameState.Preparation)
+
+            if(GameManager.Instance.State == GameState.Preparation)
             {
-                return;
-            }
-            if(IsReady)
+                if(IsReady)
+                {
+                    IsReady = false;
+                    GameManager.Instance.CheckGameStart(this);
+                }
+                else
+                {
+                    Destroy(this.gameObject);
+                }
+            }else if(GameManager.Instance.State == GameState.Finished)
             {
-                IsReady = false;
-                GameManager.Instance.CheckGameStart(this);
-            }
-            else
-            {
-                Destroy(this.gameObject);
+                GameManager.Instance.ReturnToMain();
             }
         }
 
@@ -184,14 +197,14 @@ namespace BSA
         // --- Public/Internal Methods --------------------------------------------------------------------------------
         public void Hit()
         {
-            if(GameManager.Settings.InvincibleMode)
+            if(GameManager.Settings.InvincibleMode || GameManager.Instance.State != GameState.Running)
                 return;
 
             IsAlive = false;
             _animator.SetBool("isHit", true);
             this.DoAfter(.5f, () => _animator.SetBool("isHit", false));
             //_animator.SetTrigger("gotHit");
-            FloatToGround();
+            StartCoroutine(FloatToGroundRoutine());
             GameManager.Instance.CheckGameEnd();
         }
 
@@ -199,12 +212,15 @@ namespace BSA
         {
             _cloth.worldAccelerationScale = 0f;
             transform.position = spawnPosition;
+            _spawnPosition = spawnPosition;
+            _defaultLocalBodyPos = _body.localPosition;
             this.DoAfter(delay, AllowMovement);
             //Invoke(nameof(AllowMovement), delay);
         }
 
         public void EndGame()
         {
+            _defaultTurnTime = _turnTime;
             _turnTime = 1f;
             _canMove = false;
             _moveDirection = Vector3.back;
@@ -223,14 +239,35 @@ namespace BSA
             _bodyRenderer.material.color = newColor;
         }
 
+        public void ResetStatus()
+        {
+            _cloth.worldAccelerationScale = 0f;
+            _cloth.gameObject.SetActive(false);
+            _canMove = false;
+            _turnTime = _defaultTurnTime;
+            IsAlive = true;
+            _moveDirection = Vector3.zero;
 
+            if(_floatToGroundRoutine != null)
+            {
+                StopCoroutine( _floatToGroundRoutine );
+            }
+
+            transform.position = _spawnPosition;
+            _body.localPosition = _defaultLocalBodyPos;
+            transform.forward = Vector3.back;
+            _cloth.gameObject.SetActive(true);
+
+            _animator.SetBool("isHit", false);
+            _animator.Play("Idle");
+        }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private void AllowMovement()
         {
             _cloth.worldAccelerationScale = 0.2f;
             _canMove = true;
-        }        
+        }
 
         private IEnumerator AbilityRoutine()
         {
@@ -254,7 +291,8 @@ namespace BSA
             {
                 _animator.SetBool("AbilityCancel", true);
                 _ability.AbilityCanceled();
-            } else
+            }
+            else
             {
                 _isOnCooldown = true;
                 _ability.AbilityActivated();
@@ -264,13 +302,15 @@ namespace BSA
 
         }
 
-        private void FloatToGround()
+        private IEnumerator FloatToGroundRoutine()
         {
-
             Vector3 currentPos = _body.localPosition;
             float y = currentPos.y;
 
-            this.AutoLerp(y, y - 1.2f, GameManager.Settings.PlayerDeathAnimationLength, FloatDown);
+            yield return _floatToGroundRoutine = this.AutoLerp(y, y - 1.2f, GameManager.Settings.PlayerDeathAnimationLength, FloatDown);
+
+            Debug.Log("Finished Routine");
+            _floatToGroundRoutine = null;
 
             void FloatDown(float yPos)
             {

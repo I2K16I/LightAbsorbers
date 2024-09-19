@@ -8,10 +8,9 @@ namespace BSA
     public class OrbManager : MonoBehaviour
     {
         // --- Fields -------------------------------------------------------------------------------------------------
-        [SerializeField] private bool _showSpawnRadius = true;
         [SerializeField] private OrbMovement _prefab;
-        [SerializeField] private float _spawnRadius = 1f;
         [SerializeField] private List<OuterOrb> _outerOrbs;
+        [SerializeField] private List<Transform> _spawnPoints;
         [SerializeField] private BeamSpawner _beamSpawner;
 
         private readonly List<OrbMovement> _orbs = new();
@@ -24,27 +23,21 @@ namespace BSA
         // --- Unity Functions ----------------------------------------------------------------------------------------
         private void Awake()
         {
-            Vector3 spawnPosition = transform.position;
-            Vector3 offset = Vector3.zero;
+            GameManager.Instance.OrbManager = this;
 
-            for(int i = 0; i < GameManager.Settings.NumberOfOrbs; ++i)
+            int amountOfOrbsToCreate = GameManager.Settings.NumberOfOrbs;
+            if(amountOfOrbsToCreate > _spawnPoints.Count)
             {
-                offset = new Vector3(Random.Range(-_spawnRadius, _spawnRadius), 0, Random.Range(-_spawnRadius, _spawnRadius));
-                spawnPosition += offset;
-                _orbs.Add(Instantiate(_prefab, spawnPosition, Quaternion.identity));
-                spawnPosition = transform.position;
+                amountOfOrbsToCreate = _spawnPoints.Count;
             }
+
+            for(int i = 0; i < amountOfOrbsToCreate; ++i)
+            {
+                _orbs.Add(Instantiate(_prefab, _spawnPoints[i].position, Quaternion.identity));
+            }
+
         }
 
-        void OnDrawGizmosSelected()
-        {
-            // Draw a yellow sphere at the transform's position
-            if(_showSpawnRadius)
-            {
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawLine(transform.position, transform.position + transform.forward * _spawnRadius);
-            }
-        }
         // --- Interface implementations ------------------------------------------------------------------------------
 
         // --- Event callbacks ----------------------------------------------------------------------------------------

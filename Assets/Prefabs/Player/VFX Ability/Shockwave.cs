@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Android;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.VFX;
 using Color = UnityEngine.Color;
 
@@ -99,20 +100,17 @@ namespace BSA
             particle.material.SetColor("_EmissionColor", newColor * 4);
             _groundMaterial.material.SetColor("_Color", newColor);
 		}
-        // --- Protected/Private Methods ------------------------------------------------------------------------------
-        private IEnumerator AbilityRoutine()
+		// --- Protected/Private Methods ------------------------------------------------------------------------------
+		private IEnumerator AbilityRoutine()
 		{
 			//_waveObject.SetActive(true);
 			_particleWave.Play();
-            _groundMaterial.material.SetFloat("_TotalAlpha", 0);
+			_groundMaterial.material.SetFloat("_TotalAlpha", 0);
 			float scale = transform.localScale.x;
 
 			//Collider[] colliders = new Collider[GameManager.Settings.NumberOfOrbs];
-            Collider[] colliders = new Collider[10];
-            Vector3 center = transform.position;
-			Vector3 localForward = transform.forward;
-			Vector3 lookDirection = transform.forward - transform.position;
-			Vector3 centerToCollision = Vector3.zero;
+			Collider[] colliders = new Collider[10];
+			HashSet<Collider> positiveHits = new();
 
 			int alphaSlider = Shader.PropertyToID("_AlphaSlider");
 
@@ -122,20 +120,35 @@ namespace BSA
 			{
                 _currentRadius = t * _attackRadius;
                 _groundMaterial.material.SetFloat(alphaSlider, t * .5f);
+				Vector3 center = transform.position;
 
                 int numColliders = Physics.OverlapSphereNonAlloc(center, _currentRadius, colliders, _collisionLayer);
                 for(int i = 0; i < numColliders; i++)
                 {
+					if(positiveHits.Contains(colliders[i]))
+						continue;
 
                     if(colliders[i].TryGetComponent(out OrbMovement orb))
                     {
-						centerToCollision = orb.transform.position - center;
-						//Debug.Log("Found Orb");
-						if(Vector3.Angle(lookDirection, centerToCollision) < 45f)
+						Vector3 toTarget = orb.transform.position - center;
+						float distance = toTarget.magnitude;
+						Vector3 straightTarget = center + transform.forward * distance;
+						Vector3 closestPoint = colliders[i].ClosestPoint(straightTarget);
+						Vector3 direction = (closestPoint - center).normalized;
+
+						float angle = Vector3.SignedAngle(direction, transform.forward, Vector3.up);
+
+                        //Debug.Log("Found Orb");
+                        if(Mathf.Abs(angle) <= _maxAttackAngle)
 						{
+							Debug.DrawLine(center, closestPoint, Color.green, 1f);
 							//Debug.Log("Reflected Orb");
-							orb.Reflect(localForward);
-						}
+							float distanceT = 1f - Mathf.InverseLerp(.5f, _attackRadius, distance);
+							float speedMultiplier = Mathf.Lerp(1f, 5f, distanceT);
+
+							orb.Reflect(transform.forward, speedMultiplier);
+							positiveHits.Add(colliders[i]);
+                        }
                     }
                 }
             }

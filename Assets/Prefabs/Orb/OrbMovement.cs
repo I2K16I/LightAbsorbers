@@ -35,8 +35,8 @@ namespace BSA
             _timeTillEndSpeed = _settings.TimeTillEndSpeed;
             _currentMoveSpeed = _startSpeed;
 
-            _moveDirection = new Vector3(Random.Range(0f, 1f), 0, Random.Range(0f, 1f));
-            _moveDirection.Normalize();
+            float randomAngle = Random.Range(0f, 360f);
+            _moveDirection = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.forward;
             IsPaused = true;
 
             //_moveDirection = transform.forward;
@@ -110,11 +110,11 @@ namespace BSA
             this.AutoLerp(_startSpeed, _endSpeed, _timeTillEndSpeed, speed => _currentMoveSpeed = speed);
         }
 
-        public void Reflect(Vector3 direction)
+        public void Reflect(Vector3 direction, float speedMultiplier)
         {
             direction.y = 0;
-            _speedMult = 2f;
-            this.AutoLerp(_speedMult, 1, 3f, reducedSpeed => _speedMult = reducedSpeed);
+            _speedMult = speedMultiplier;
+            this.AutoLerp(_speedMult, 1f, 3f, reducedSpeed => _speedMult = reducedSpeed);
             _moveDirection = direction;
 
         }

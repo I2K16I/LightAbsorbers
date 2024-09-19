@@ -14,10 +14,16 @@ namespace BSA
         W
     }
 
+    public enum Space
+    {
+        global = 1,
+        local = 2,
+    }
+
     public static class Extensions
     {
         // --- Fields -------------------------------------------------------------------------------------------------
-        
+
 
         // --- Properties ---------------------------------------------------------------------------------------------
 
@@ -30,7 +36,7 @@ namespace BSA
         // --- Event callbacks ----------------------------------------------------------------------------------------
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
-        public static void SetPosition(this Transform t, Axis axis, float value)
+        public static void SetPosition(this Transform t, Axis axis, float value, Space space = Space.global)
         {
             Vector3 pos = t.position;
             //       switch(axis)
@@ -50,14 +56,25 @@ namespace BSA
             //           case Axis.W:
             //throw new NotImplementedException();
             //       }
-
-            t.position = axis switch
+            if(space == Space.global)
             {
-                Axis.X => new Vector3(value, pos.y, pos.z),
-                Axis.Y => new Vector3(pos.x, value, pos.z),
-                Axis.Z => new Vector3(pos.x, pos.y, value),
-                _ => throw new NotImplementedException(),
-            };
+                t.position = axis switch
+                {
+                    Axis.X => new Vector3(value, pos.y, pos.z),
+                    Axis.Y => new Vector3(pos.x, value, pos.z),
+                    Axis.Z => new Vector3(pos.x, pos.y, value),
+                    _ => throw new NotImplementedException(),
+                };
+            } else if (space == Space.local)
+            {
+                t.localPosition = axis switch
+                {
+                    Axis.X => new Vector3(value, pos.y, pos.z),
+                    Axis.Y => new Vector3(pos.x, value, pos.z),
+                    Axis.Z => new Vector3(pos.x, pos.y, value),
+                    _ => throw new NotImplementedException(),
+                };
+            }
         }
 
 

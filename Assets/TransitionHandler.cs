@@ -29,21 +29,24 @@ namespace BSA
             }
             else
             { 
-                StartCoroutine(MoveScreenCoverOutRoutine(1f, _joinScreen));
+                StartCoroutine(MoveScreenCoverOutRoutine(GameManager.Settings.TransitionTime/2, _joinScreen));
+                GameManager.Instance.TransitionHandler = this;
             }
 		}
 
+        private void OnDestroy()
+        {
+            
+        }
 
         // --- Interface implementations ------------------------------------------------------------------------------
 
         // --- Event callbacks ----------------------------------------------------------------------------------------
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
-        public void MoveFromJoinToGameScreen(float totalTransitionTime)
+        public void SwtichFromScene(float totalTransitionTime)
         {
-            StartCoroutine(MoveScreenCoverInRoutine(totalTransitionTime/2, _joinScreen));
-            
-            this.DoAfter(totalTransitionTime/2, () => StartCoroutine(MoveScreenCoverOutRoutine(totalTransitionTime / 2, _joinScreen)));
+            StartCoroutine(MoveScreenCoverInRoutine(totalTransitionTime, _joinScreen));
         }
 
         public void MoveFromMainMenuToGame(float transitionTime)
