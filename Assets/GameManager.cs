@@ -21,7 +21,6 @@ namespace BSA
 
         [Header("Settings")]
         [SerializeField] private Settings _settings;
-        [SerializeField] private LayerMask _layerMask;
 
         [Header("Camera and Transitions")]
         [SerializeField] private CinemachineVirtualCamera _joinCamera;
@@ -71,15 +70,15 @@ namespace BSA
 
             Instance = this;
 
+            DontDestroyOnLoad(this.gameObject);
             State = GameState.Preparation;
 
             _playerInputManager.onPlayerJoined += OnPlayerJoined;
             _playerInputManager.onPlayerLeft += OnPlayerLeft;
             _consecutiveOrbAttacks = _settings.StartAmountOfAttacks;
-            if(_isInTestScene == false)
-            {
-                UpdateCameras();
-            }
+            
+            //UpdateCameras();
+            
         }
 
         private void OnDestroy()
@@ -263,6 +262,7 @@ namespace BSA
 
             _countdownBar.gameObject.SetActive(false);
             UpdateCameras();
+            _bannerManager.DisableCloths();
 
             float timeBetweenTransitonAndGameStart = _settings.TimeBetweenTransitionAndStart;
 

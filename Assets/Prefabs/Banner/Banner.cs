@@ -9,11 +9,12 @@ namespace BSA
     public class Banner : MonoBehaviour
     {
         // --- Fields -------------------------------------------------------------------------------------------------
-        [SerializeField] private MeshRenderer _banner;
+        [SerializeField] private SkinnedMeshRenderer _banner;
         [SerializeField] private MeshRenderer _podium;
-        [SerializeField] private Material _noPlayerMaterial;
+        [SerializeField] private Color _noPlayerColor;
         [SerializeField] private PlayerJoinUI _spriteManager;
         [SerializeField] private Transform _spawnPoint;
+        [SerializeField] private Cloth _bannerCloth;
 
         // --- Properties ---------------------------------------------------------------------------------------------
         public PlayerMovement Player { get; private set; }
@@ -34,10 +35,10 @@ namespace BSA
         public void AssignPlayer(PlayerMovement player)
         {
             Player = player;
-            _podium.material = Player.Material;
+            _podium.material.color = Player.MainColor;
             if(Player.IsReady)
             {
-                _banner.material = Player.Material;
+                _banner.material.SetColor("_BaseColor", Player.MainColor);
             }
             _spriteManager.UpdateReadyStatus(Player.IsReady);
             Player.transform.position = _spawnPoint.position;
@@ -50,8 +51,8 @@ namespace BSA
                 return;
 
             Player = null;
-            _podium.material = _noPlayerMaterial;
-            _banner.material = _noPlayerMaterial;
+            _podium.material.color = _noPlayerColor;
+            _banner.material.SetColor("_BaseColor", _noPlayerColor);
             _spriteManager.SetStatusPlayerLeft();
         }
 
@@ -61,18 +62,23 @@ namespace BSA
             {
                 if(Player.IsReady)
                 {
-                    _banner.material = Player.Material;
+                    _banner.material.SetColor("_BaseColor", Player.MainColor);
                 }
                 else
                 {
-                    _banner.material = _noPlayerMaterial;
+                    _banner.material.SetColor("_BaseColor", _noPlayerColor);
                 }
                 _spriteManager.UpdateReadyStatus(Player.IsReady);
             }
             else
             {
-                _banner.material = _noPlayerMaterial;
+                _banner.material.SetColor("_BaseColor", _noPlayerColor);
             }
+        }
+
+        public void DisableCloth()
+        {
+            _bannerCloth.enabled = false;
         }
         // --- Protected/Private Methods ------------------------------------------------------------------------------
 

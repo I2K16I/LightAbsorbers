@@ -29,4 +29,4 @@ MonoBehaviour:
   _timeTillEndSpeed: 60
   _updateFrequency: 1
   _orbSize: 1
-  _invincibleMode: 1
+  _invincibleMode: 0

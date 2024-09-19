@@ -51,7 +51,7 @@ namespace BSA
         public int MaterialId { get; set; }
         public int PositionId { get; set; } 
 
-        public Material Material { get; set; }
+        public Color MainColor { get; set; }
         public Color CapeColor { get; set; }
         public Color MetalColor { get; set; }
 
@@ -189,10 +189,10 @@ namespace BSA
 
             IsAlive = false;
             _animator.SetBool("isHit", true);
+            this.DoAfter(.5f, () => _animator.SetBool("isHit", false));
+            //_animator.SetTrigger("gotHit");
             FloatToGround();
             GameManager.Instance.CheckGameEnd();
-            // Hier soll noch dem GameManager gesagt werden dass ein Spieler getroffen wurde
-
         }
 
         public void GameStart(Vector3 spawnPosition, float delay)
@@ -212,16 +212,15 @@ namespace BSA
 
         public void ChangeMaterial()
         {
-            Color temp = Material.GetColor("_ColorUp");
-            _ability.ChangeColor(temp);
+            //Color temp = Material.GetColor("_ColorUp");
+            Color newColor = MainColor;
+            _ability.ChangeColor(newColor);
             _capeRenderer.material.SetColor("_Color", CapeColor);
             _capeRenderer.material.SetColor("_MetalicColor", MetalColor);
-            //_capeRenderer.material.color = temp;
-            //_headRenderer.material.color = temp;
-            _headRenderer.material.SetColor("_EmissionColor", temp * 4);
-            _light.color = temp;
-            temp.a = 0.35f;
-            _bodyRenderer.material.color = temp;
+            _headRenderer.material.SetColor("_EmissionColor", newColor * 4);
+            _light.color = newColor;
+            newColor.a = 0.35f;
+            _bodyRenderer.material.color = newColor;
         }
 
 

@@ -9,7 +9,7 @@ namespace BSA
         [System.Serializable]
         public class PlayerMaterial
         {
-            public Material material;
+            public Color mainColor;
             public Color capeColor;
             public Color metalColor;
             public bool isInUse;
@@ -40,7 +40,7 @@ namespace BSA
         public void PlayerJoined(PlayerMovement player)
         {
             PlayerMaterial playerMaterial = _playerMaterials.First(pm => pm.isInUse == false);
-            player.Material = playerMaterial.material;
+            player.MainColor = playerMaterial.mainColor;
             player.CapeColor = playerMaterial.capeColor;
             player.MetalColor = playerMaterial.metalColor;
             playerMaterial.isInUse = true;
@@ -55,9 +55,17 @@ namespace BSA
             _banners[player.PositionId].UpdateReady();
         }
 
+        public void DisableCloths()
+        {
+            foreach (Banner item in _banners)
+            {
+                item.DisableCloth();
+            }
+        }
+
         public void PlayerLeft(PlayerMovement player)
         {
-            PlayerMaterial playerMaterial = _playerMaterials.First(pm => pm.material == player.Material);
+            PlayerMaterial playerMaterial = _playerMaterials.First(pm => pm.mainColor == player.MainColor);
             playerMaterial.isInUse = false;
 
             Banner banner = _banners[player.PositionId];

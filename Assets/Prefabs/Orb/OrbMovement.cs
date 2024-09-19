@@ -106,7 +106,6 @@ namespace BSA
 
         public void StartOrb()
         {
-            Debug.Log("Orb started");
             IsPaused = false;
             this.AutoLerp(_startSpeed, _endSpeed, _timeTillEndSpeed, speed => _currentMoveSpeed = speed);
         }
