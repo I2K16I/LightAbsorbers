@@ -46,23 +46,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _settings: {fileID: 11400000, guid: eee09f3d56a8c404588342cbfd80c76e, type: 2}
-  _layerMask:
-    serializedVersion: 2
-    m_Bits: 0
-  _joinCamera: {fileID: 0}
-  _gameCamera: {fileID: 0}
-  _winningCamera: {fileID: 0}
-  _winningCameraOffset: {x: 0, y: 4.5, z: -5.5}
+  _winningCameraOffset: {x: 0, y: 5.5, z: -5.5}
   _countdownBar: {fileID: 0}
   _playerInputManager: {fileID: 9137496567158723666}
-  _orbManager: {fileID: 0}
   _bannerManager: {fileID: 0}
-  _UiManager: {fileID: 0}
-  _spawnPointsGame:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  _canStartSolo: 0
 --- !u!114 &9137496567158723666
 MonoBehaviour:
   m_ObjectHideFlags: 0

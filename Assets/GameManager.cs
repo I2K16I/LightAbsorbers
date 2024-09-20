@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.DualShock;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -34,9 +35,9 @@ namespace BSA
         private Coroutine _startRoutineInstance = null;
         private Coroutine _increaseAttacksRoutine = null;
 
-
         [Header("Debugging")]
         [SerializeField] private bool _canStartSolo = false;
+        private bool _canRestart;
 
 
         // --- Properties ---------------------------------------------------------------------------------------------
@@ -101,13 +102,30 @@ namespace BSA
         {
             int index = _players.Count;
             PlayerMovement movement = player.GetComponent<PlayerMovement>();
+            //Debug.Log(string.Join("\n", Gamepad.all));
+            //Debug.Log(Gamepad.current);
+
+
             movement.PositionId = index;
             player.name = $"Player_{index:00}";
             DontDestroyOnLoad(movement.gameObject);
 
             _bannerManager.PlayerJoined(movement);
             _players.Add(movement);
+
+            if(player.devices[0] is Gamepad g)
+            {
+                movement.MyGamepad = g;
+                this.SetRumble(g, Rumble.Light, .1f);
+
+                if(g is DualShockGamepad playstationController)
+                {
+                    this.DoAfter(.5f, () => playstationController.SetLightBarColor(movement.MainColor));
+                    //playstationController.SetLightBarColor(movement.MainColor);
+                }
+            }
         }
+
 
         private void OnPlayerLeft(UnityEngine.InputSystem.PlayerInput player)
         {
@@ -228,12 +246,14 @@ namespace BSA
                 {
                     StopCoroutine(_increaseAttacksRoutine);
                 }
-
                 State = GameState.Finished;
+
                 OrbManager.EndGame();
-                WinningCamera.transform.position = winner.transform.position + _winningCameraOffset;
-                UpdateCameras();
-                winner.EndGame();
+                winner.DisalowMovement();
+                this.DoAfter(2f, () => ShowWinner(winner));
+                //WinningCamera.transform.position = winner.transform.position + _winningCameraOffset;
+                //UpdateCameras();
+                //winner.EndGame();
                 // Show victory screen or whatever
             }
         }
@@ -260,8 +280,11 @@ namespace BSA
             TransitionHandler.HideDeviceLostScreen();
         }
 
-        public void RestartGame()
+        public void TryRestartGame()
         {
+            if(_canRestart == false)
+                return;
+            _canRestart = false;
             for(int i = 0; i < _spawnPointsGame.Length; i++)
             {
                 _spawnPointsGame[i] = null;
@@ -277,7 +300,7 @@ namespace BSA
         public void ReturnToMain()
         {
             SceneManager.MoveGameObjectToScene(this.gameObject, SceneManager.GetActiveScene());
-            _players.ForEach(p => { SceneManager.MoveGameObjectToScene(p.gameObject, SceneManager.GetActiveScene()); });
+            _players.ForEach(p => { p.SetToActiveScene(); });
             State = GameState.None;
             float transitionTime = _settings.TransitionTime / 2;
             TransitionHandler.SwtichFromScene(transitionTime / 2);
@@ -286,6 +309,13 @@ namespace BSA
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
 
+        private void ShowWinner(PlayerMovement winner)
+        {
+            WinningCamera.transform.position = winner.transform.position + _winningCameraOffset;
+            UpdateCameras();
+            winner.EndGame();
+            this.DoAfter(2.5f, () => _canRestart = true);
+        }
         private IEnumerator MoveToGameScene()
         {
             yield return new WaitForSeconds(_settings.StartDelay);

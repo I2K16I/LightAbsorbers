@@ -86,6 +86,7 @@ namespace BSA
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private IEnumerator DisableOrbsOverTime()
         {
+            yield return new WaitForSeconds(1f);
             for(int i = 0; i < _orbs.Count; ++i)
             {
                 _orbs[i].gameObject.SetActive(false);

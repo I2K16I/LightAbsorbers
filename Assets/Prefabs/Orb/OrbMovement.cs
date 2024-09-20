@@ -10,6 +10,7 @@ namespace BSA
         [SerializeField] private Rigidbody _rigidBody;
         [SerializeField] private float _currentMoveSpeed = 1.0f;
         [SerializeField] private Transform _center;
+        [SerializeField] private float _deceleration = .01f;
 
         private Vector3 _moveDirection = Vector3.zero;
         private Vector3 _directionBuffer = Vector3.zero;
@@ -48,6 +49,10 @@ namespace BSA
             {
                 _rigidBody.velocity = Vector3.zero;
                 return;
+            }
+            if (_speedMult > 1)
+            {
+                _speedMult -= _deceleration;
             }
             _moveDirection.y = 0f;
             //transform.position += _moveDirection * Time.fixedDeltaTime * _moveSpeed;
@@ -114,9 +119,8 @@ namespace BSA
         {
             direction.y = 0;
             _speedMult = speedMultiplier;
-            this.AutoLerp(_speedMult, 1f, 3f, reducedSpeed => _speedMult = reducedSpeed);
+            //this.AutoLerp(_speedMult, 1f, 3f, reducedSpeed => _speedMult = reducedSpeed);
             _moveDirection = direction;
-
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
