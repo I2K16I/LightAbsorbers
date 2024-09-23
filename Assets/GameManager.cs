@@ -1,6 +1,7 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -34,6 +35,7 @@ namespace BSA
         private readonly List<PlayerMovement> _players = new();
         private Coroutine _startRoutineInstance = null;
         private Coroutine _increaseAttacksRoutine = null;
+        private Coroutine _attackRoutine = null;
 
         [Header("Debugging")]
         [SerializeField] private bool _canStartSolo = false;
@@ -87,6 +89,15 @@ namespace BSA
             {
                 WinningCamera = winCam.Camera;
             }
+
+            string newSceneName = SceneManager.GetActiveScene().name;
+
+            if(newSceneName.Equals("ShockAbosorber"))
+            {
+                State = GameState.Running;
+            }
+            
+            
         }
 
         private void OnDestroy()
@@ -108,7 +119,7 @@ namespace BSA
 
             movement.PositionId = index;
             player.name = $"Player_{index:00}";
-            DontDestroyOnLoad(movement.gameObject);
+            //DontDestroyOnLoad(movement.gameObject);
 
             _bannerManager.PlayerJoined(movement);
             _players.Add(movement);
@@ -116,7 +127,7 @@ namespace BSA
             if(player.devices[0] is Gamepad g)
             {
                 movement.MyGamepad = g;
-                this.SetRumble(g, Rumble.Light, .1f);
+                g.SetRumbleForDuration(Rumble.Light, .1f);
 
                 if(g is DualShockGamepad playstationController)
                 {
@@ -240,17 +251,23 @@ namespace BSA
             var alivePlayers = _players.Where(p => p.IsAlive);
             if(alivePlayers.Count() == 1)
             {
+                State = GameState.Finished;
                 PlayerMovement winner = alivePlayers.First();
 
                 if(_increaseAttacksRoutine != null)
                 {
                     StopCoroutine(_increaseAttacksRoutine);
+                    _increaseAttacksRoutine = null;
                 }
-                State = GameState.Finished;
+                if(_attackRoutine != null)
+                {
+                    StopCoroutine(_attackRoutine);
+                    _attackRoutine = null;
+                }
 
                 OrbManager.EndGame();
                 winner.DisalowMovement();
-                this.DoAfter(2f, () => ShowWinner(winner));
+                this.DoAfter(_settings.ShowWinnerDelay, () => ShowWinner(winner));
                 //WinningCamera.transform.position = winner.transform.position + _winningCameraOffset;
                 //UpdateCameras();
                 //winner.EndGame();
@@ -290,8 +307,7 @@ namespace BSA
                 _spawnPointsGame[i] = null;
             }
             foreach(PlayerMovement player in _players) { player.ResetStatus(); }
-            _consecutiveOrbAttacks = 1;
-            State = GameState.Running;
+            _consecutiveOrbAttacks = _settings.StartAmountOfAttacks;
             float transitionTime = _settings.TransitionTime / 2;
             TransitionHandler.SwtichFromScene(transitionTime / 2);
             this.DoAfter(transitionTime, () => SceneManager.LoadScene(2));
@@ -346,9 +362,8 @@ namespace BSA
 
             yield return new WaitForSeconds(timeBetweenTransitonAndGameStart);
             OrbManager.StartOrbs();
-
             _increaseAttacksRoutine = StartCoroutine(IncreaseAttacksRoutine());
-            StartCoroutine(StartRecurringOrbAttacks());
+            _attackRoutine = StartCoroutine(StartRecurringOrbAttacks());
         }
 
         private IEnumerator IncreaseAttacksRoutine()

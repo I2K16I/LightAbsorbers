@@ -7,5 +7,7 @@ namespace BSA
         Smoother = 2,
         EasyInOutSine = 3,
         EasyOutSine = 4,
+        EasyOutQuart = 5,
+        EasyInQuart = 6,
     }
 }

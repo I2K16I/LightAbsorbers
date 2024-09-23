@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &75030020701355402
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6873369268457448070}
+  m_Layer: 0
+  m_Name: TargetPodiumPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6873369268457448070
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75030020701355402}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -1.5, z: 0}
+  m_LocalScale: {x: 6, y: 22, z: 3.4}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2322668793306735228}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &286574786341223643
 GameObject:
   m_ObjectHideFlags: 0
@@ -28,10 +59,12 @@ Transform:
   m_GameObject: {fileID: 286574786341223643}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.5, z: 0}
+  m_LocalPosition: {x: 0, y: -40, z: 0}
   m_LocalScale: {x: 6, y: 22, z: 3.4}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 570164890714354512}
+  - {fileID: 323793798864048574}
   m_Father: {fileID: 2322668793306735228}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &218773556273929405
@@ -129,12 +162,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 804729432863865148}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 10.999997, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 0.56818163, z: 0}
+  m_LocalScale: {x: 0.16666667, y: 0.045454543, z: 0.29411763}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2322668793306735228}
+  m_Father: {fileID: 836655004936952480}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &890133567043957630
 GameObject:
@@ -543,20 +576,20 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2920305214134936390}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -2.5}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.7352941}
+  m_LocalScale: {x: 0.0016666667, y: 0.00045454543, z: 0.0029411763}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6867362554703626022}
   - {fileID: 1457192686658352169}
   - {fileID: 848797070093817117}
   - {fileID: 7686273895704542295}
-  m_Father: {fileID: 2322668793306735228}
+  m_Father: {fileID: 836655004936952480}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 4}
+  m_AnchoredPosition: {x: 0, y: 0.25000024}
   m_SizeDelta: {x: 500, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &703519673820484807
@@ -1197,10 +1230,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 570164890714354512}
   - {fileID: 2014184912729043031}
+  - {fileID: 6873369268457448070}
   - {fileID: 836655004936952480}
-  - {fileID: 323793798864048574}
   - {fileID: 4930391343309387871}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1218,10 +1250,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _banner: {fileID: 8175085835988900557}
   _podium: {fileID: 228076873961211050}
-  _noPlayerColor: {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
+  _podiumObject: {fileID: 836655004936952480}
+  _noPlayerColor: {r: 0.48235294, g: 0.34509805, b: 0.24705882, a: 1}
   _spriteManager: {fileID: 4176935959390440815}
   _spawnPoint: {fileID: 570164890714354512}
   _bannerCloth: {fileID: 4804307132029578122}
+  _targetPosition: {fileID: 6873369268457448070}
 --- !u!1 &9013624182617077241
 GameObject:
   m_ObjectHideFlags: 0

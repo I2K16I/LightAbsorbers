@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 namespace BSA
 {
@@ -76,49 +77,7 @@ namespace BSA
                     _ => throw new NotImplementedException(),
                 };
             }
-        }
-
-        public static void SetRumble(this MonoBehaviour mb, Gamepad pad, Rumble rumbleType, float length = .2f)
-        {
-            if(pad == null)
-                return;
-
-            mb.StartCoroutine(ActivateRumble(pad, rumbleType, length));
-        }
-
-        private static IEnumerator ActivateRumble(Gamepad pad, Rumble rumbleType, float length = .2f)
-        {
-            switch(rumbleType)
-            {
-                case Rumble.None:
-                    pad.SetMotorSpeeds(0f, 0f);
-                    break;
-                case Rumble.Light:
-                    pad.SetMotorSpeeds(0.0f, 0.55f);
-                    yield return new WaitForSeconds(length);
-                    pad.ResetHaptics();
-                    break;
-                case Rumble.Medium:
-                    pad.SetMotorSpeeds(0.2f, 0.75f);
-                    yield return new WaitForSeconds(length);
-                    pad.ResetHaptics();
-                    break;
-                case Rumble.Strong:
-                    pad.SetMotorSpeeds(0.75f, 0.75f);
-                    yield return new WaitForSeconds(length);
-                    pad.ResetHaptics();
-                    break;
-                case Rumble.LightUnlimited:
-                    pad.SetMotorSpeeds(0.0f, 0.55f);
-                    break;
-                case Rumble.MediumUnlimited:
-                    pad.SetMotorSpeeds(0.2f, 0.75f);
-                    break;
-                case Rumble.StrongUnlimited:
-                    pad.SetMotorSpeeds(0.75f, 0.75f);
-                    break;
-            }
-        }
+        }        
 
         public static void DoAfter(this MonoBehaviour mb, float delay, Action action)
         {
@@ -188,6 +147,12 @@ namespace BSA
                     break;
                 case EasingType.EasyOutSine:
                     t = Mathf.Sin((t * Mathf.PI) / 2);
+                    break;
+                case EasingType.EasyOutQuart:
+                    t = 1 - Mathf.Pow(1 - t, 4);
+                    break;
+                case EasingType.EasyInQuart:
+                    t = t* t * t * t;
                     break;
             }
             return t;

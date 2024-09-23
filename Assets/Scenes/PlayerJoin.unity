@@ -584,6 +584,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 701041324312972565, guid: 25bf0d21b0561ed48860b099a818875b,
+        type: 3}
+      propertyPath: m_Type
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 701041324312972565, guid: 25bf0d21b0561ed48860b099a818875b,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 4c81bf3e195ef4d48a8accec8df23cd6,
+        type: 3}
+    - target: {fileID: 701041324312972565, guid: 25bf0d21b0561ed48860b099a818875b,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 701041324312972565, guid: 25bf0d21b0561ed48860b099a818875b,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 701041324312972565, guid: 25bf0d21b0561ed48860b099a818875b,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 701041324312972565, guid: 25bf0d21b0561ed48860b099a818875b,
+        type: 3}
+      propertyPath: m_PixelsPerUnitMultiplier
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3686715707483171977, guid: 25bf0d21b0561ed48860b099a818875b,
         type: 3}
       propertyPath: m_Name

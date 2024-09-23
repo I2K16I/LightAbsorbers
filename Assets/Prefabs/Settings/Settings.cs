@@ -34,6 +34,7 @@ namespace BSA
         [Tooltip("This value represents the number of seconds before the players can start moving after the transition is done")]
         [SerializeField] private float _timeBetweenTransitionAndStart = 2f;
 		[SerializeField] private float _playerDeathAnimationLength = 3f;
+		[SerializeField] private float _showWinnerDelay = 2f;
 
 		[Header("Orb Settings")]
 		[Range(0f, 16f)]
@@ -63,6 +64,7 @@ namespace BSA
 		public float TransitionTime => _transitionTime;
 		public float TimeBetweenTransitionAndStart => _timeBetweenTransitionAndStart;
 		public float PlayerDeathAnimationLength => _playerDeathAnimationLength;
+		public float ShowWinnerDelay => _showWinnerDelay;
 
 		public int NumberOfOrbs => _numberOfOrbs;
 		public float OrbStartSpeed => _orbStartSpeed;

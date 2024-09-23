@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 namespace BSA
 {
@@ -18,14 +18,11 @@ namespace BSA
         // --- Fields -------------------------------------------------------------------------------------------------
         [SerializeField] private CharacterController _controller;
         [SerializeField] private float _moveSpeed = 1f;
-        [Tooltip("This value is a multiplier for the move speed. If the ability slows you, set the value to >1.")]
-        [SerializeField] private float _abilityMoveSpeedMult = 0.5f;
         [SerializeField] private float _gravity = 1f;
         [SerializeField] private float _turnTime = .5f;
         [SerializeField] private SkinnedMeshRenderer _capeRenderer;
         [SerializeField] private SkinnedMeshRenderer _bodyRenderer;
         [SerializeField] private MeshRenderer _headRenderer;
-        [SerializeField] private MeshRenderer _shadow;
         [SerializeField] private Light _light;
         [SerializeField] private Cloth _cloth;
         [SerializeField] private Transform _body;
@@ -42,11 +39,14 @@ namespace BSA
         private Coroutine _floatToGroundRoutine = null;
 
         [Header("Ability")]
+        [Tooltip("This value is a multiplier for the move speed. If the ability slows you, set the value to >1.")]
+        [SerializeField] private float _abilityMoveSpeedMult = 0.5f;
         [SerializeField] private float _abilityCooldown = 5f;
         private bool _isOnCooldown = false;
         [SerializeField] private Shockwave _ability;
         private Transform _abilityTransform;
         [SerializeField] private Transform _abilitySpawnPoint;
+        [SerializeField] private Image _abilityIndicator;
 
 
         // --- Properties ---------------------------------------------------------------------------------------------
@@ -77,9 +77,9 @@ namespace BSA
             {
                 //Debug.Log(playstationController.displayName);
                 playstationController.SetLightBarColor(MainColor);
-            }
-            
+            }            
         }
+
         private void FixedUpdate()
         {
             if(!IsAlive)
@@ -156,10 +156,10 @@ namespace BSA
 
             if((GameManager.Instance.State == GameState.Preparation))
             {
-                if(MyGamepad != null)
+                if(MyGamepad != null && IsReady == false)
                 {
                     //Debug.Log($"{name} is ready", this);
-                    this.SetRumble(MyGamepad, Rumble.Light, .1f);
+                    MyGamepad.SetRumbleForDuration(Rumble.Light, .1f);
                 }
                 IsReady = true;
                 GameManager.Instance.CheckGameStart(this);
@@ -247,7 +247,7 @@ namespace BSA
 
             if(MyGamepad != null)
             {
-                this.SetRumble(MyGamepad, Rumble.Strong, .4f);
+                MyGamepad.SetRumbleForDuration(Rumble.Strong, .4f);
             }
 
             IsAlive = false;
@@ -279,7 +279,7 @@ namespace BSA
             if(MyGamepad == null)
                 return;
 
-            this.SetRumble(MyGamepad, Rumble.None);
+            MyGamepad.ResetRumble();
         }
 
         public void SetToActiveScene()
@@ -290,15 +290,14 @@ namespace BSA
 
         public void ChangeMaterial()
         {
-            //Color temp = Material.GetColor("_ColorUp");
             Color newColor = MainColor;
             _ability.ChangeColor(newColor);
-            _shadow.material.color = newColor;
             _capeRenderer.material.SetColor("_Color", CapeColor);
             _capeRenderer.material.SetColor("_MetalicColor", MetalColor);
             _headRenderer.material.SetColor("_EmissionColor", newColor * 4);
             _light.color = newColor;
             newColor.a = 0.35f;
+            _abilityIndicator.color = newColor;
             _bodyRenderer.material.color = newColor;
         }
 
@@ -309,7 +308,6 @@ namespace BSA
             _cloth.gameObject.SetActive(false);
             _canMove = false;
             _turnTime = _defaultTurnTime;
-            IsAlive = true;
             _moveDirection = Vector3.zero;
 
             if(_floatToGroundRoutine != null)
@@ -322,6 +320,7 @@ namespace BSA
             transform.forward = Vector3.back;
             _cloth.gameObject.SetActive(true);
 
+            IsAlive = true;
             _animator.SetBool("isHit", false);
             _animator.Play("Idle");
         }
@@ -347,7 +346,7 @@ namespace BSA
             _abilityTransform.position = _abilitySpawnPoint.position;
             _abilityTransform.forward = transform.forward;
             _ability.AbilityPressed();
-            this.SetRumble(MyGamepad, Rumble.LightUnlimited);
+            MyGamepad.SetRumble(Rumble.Light);
             float time = 0f;
 
             while(_performingAbility)
@@ -360,13 +359,15 @@ namespace BSA
             {
                 _animator.SetBool("AbilityCancel", true);
                 _ability.AbilityCanceled();
-                this.SetRumble(MyGamepad, Rumble.None);
+                MyGamepad.ResetRumble();
             }
             else
             {
                 _isOnCooldown = true;
+                _abilityIndicator.fillAmount = 0f;
+                this.AutoLerp(0f, 1f, _abilityCooldown, t => _abilityIndicator.fillAmount = t);
                 _ability.AbilityActivated();
-                this.SetRumble(MyGamepad, Rumble.Medium);
+                MyGamepad.SetRumbleForDuration(Rumble.Medium, 0.2f);
                 this.DoAfter(_abilityCooldown, () => _isOnCooldown = false);
             }
             _animator.SetBool("AbilityCharging", false);
@@ -380,7 +381,6 @@ namespace BSA
 
             yield return _floatToGroundRoutine = this.AutoLerp(y, y - 1.2f, GameManager.Settings.PlayerDeathAnimationLength, FloatDown);
 
-            Debug.Log("Finished Routine");
             _floatToGroundRoutine = null;
 
             void FloatDown(float yPos)
@@ -388,8 +388,9 @@ namespace BSA
                 currentPos.y = yPos;
                 _body.localPosition = currentPos;
             }
-
         }
+
+        
 
         // ----------------------------------------------------------------------------------------
     }
