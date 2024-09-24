@@ -8,6 +8,7 @@ namespace BSA
         // --- Fields -------------------------------------------------------------------------------------------------
         [SerializeField] private TriggerCallbacks _beamMeshTrigger;
         [SerializeField] private CapsuleCollider _collider;
+        [SerializeField] private CapsuleCollider _reflectorCollider;
         [SerializeField] private MeshRenderer _indicator;
         [SerializeField] private Material _beamMaterial;
         [SerializeField] private Material _indicatorMaterial;
@@ -52,7 +53,7 @@ namespace BSA
             Vector3 outerOrbPos = outerOrb.position;
             Vector3 innerOrbPos = innerOrb.position;
 
-            transform.position = new Vector3(outerOrbPos.x, innerOrbPos.y, outerOrbPos.z);
+            transform.position = outerOrbPos;
 
             Vector3 vectorBetween = outerOrbPos - innerOrbPos;
             transform.right = vectorBetween;
@@ -94,6 +95,11 @@ namespace BSA
             // Enable colliders
             _collider.enabled = true;
             _indicator.material = _beamMaterial;
+
+            if(GameManager.Settings.ReflectingBeams)
+            {
+                _reflectorCollider.enabled = true;
+            }
 
             yield return new WaitForSeconds(lifetime);
 

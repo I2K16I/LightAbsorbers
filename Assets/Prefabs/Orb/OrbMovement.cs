@@ -11,6 +11,7 @@ namespace BSA
         [SerializeField] private float _currentMoveSpeed = 1.0f;
         [SerializeField] private Transform _center;
         [SerializeField] private float _deceleration = .01f;
+        [SerializeField] private SphereCollider _collider;
 
         private Vector3 _moveDirection = Vector3.zero;
         private Vector3 _directionBuffer = Vector3.zero;
@@ -24,6 +25,7 @@ namespace BSA
         // --- Properties ---------------------------------------------------------------------------------------------
         public bool IsPaused { get; private set; }
         public Transform Center => _center;
+        public SphereCollider Colider => _collider;
 
         // --- Events -------------------------------------------------------------------------------------------------
 

@@ -17,16 +17,19 @@ MonoBehaviour:
   _beamWindUpTime: 1
   _timeBetweenAttacks: 8
   _startAmountOfAttacks: 1
-  _increaseAttacksAfter: 10
-  _increaseAttacksAgainAfter: 10
+  _increaseAttacksAfter: 20
+  _increaseAttacksAgainAfter: 20
   _startDelay: 1.5
   _transitionTime: 1
   _timeBetweenTransitionAndStart: 3.5
   _playerDeathAnimationLength: 3
-  _numberOfOrbs: 16
+  _showWinnerDelay: 2
+  _numberOfOrbs: 12
   _orbStartSpeed: 4
   _orbEndSpeed: 8
   _timeTillEndSpeed: 60
   _updateFrequency: 1
   _orbSize: 1
-  _invincibleMode: 0
+  _beamsCanReflectOrbs: 1
+  _bordersCanHitPlayer: 1
+  _invincibleMode: 1

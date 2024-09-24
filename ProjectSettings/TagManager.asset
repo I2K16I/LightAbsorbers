@@ -10,7 +10,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - TransparentWithDepth
@@ -19,8 +19,8 @@ TagManager:
   - Fog
   - Floor
   - Moon
-  - 
-  - 
+  - OrbReflector
+  - Border
   - 
   - 
   - 

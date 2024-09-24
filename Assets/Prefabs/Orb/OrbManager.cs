@@ -56,15 +56,16 @@ namespace BSA
             if(TrySelectOrbs(out OuterOrb outerOrbA, out OuterOrb outerOrbB, out OrbMovement innerOrb))
             {
                 innerOrb.PauseMovement();
+                innerOrb.Colider.enabled = false;
                 outerOrbA.IsAttacking = true;
                 outerOrbB.IsAttacking = true;
-
-                _beamSpawner.SpawnBeamAt(outerOrbA.transform, innerOrb.Center);
-                _beamSpawner.SpawnBeamAt(outerOrbB.transform, innerOrb.Center);
+                _beamSpawner.SpawnBeamAt(outerOrbA.Center, innerOrb.Center);
+                _beamSpawner.SpawnBeamAt(outerOrbB.Center, innerOrb.Center);
 
                 this.DoAfter(attackDuration, () =>
                 {
                     innerOrb.ResumeMovement();
+                    innerOrb.Colider.enabled = true;
                     outerOrbA.IsAttacking = false;
                     outerOrbB.IsAttacking = false;
                 });

@@ -13,6 +13,7 @@ namespace BSA
         [SerializeField] private MeshRenderer _podium;
         [SerializeField] private Transform _podiumObject;
         [SerializeField] private Color _noPlayerColor;
+        [SerializeField] private Color _noPlayerBannerColor;
         [SerializeField] private PlayerJoinUI _spriteManager;
         [SerializeField] private Transform _spawnPoint;
         [SerializeField] private Cloth _bannerCloth;
@@ -38,7 +39,7 @@ namespace BSA
         public void AssignPlayer(PlayerMovement player)
         {
             Player = player;
-            _podium.material.color = Player.MainColor;
+            _podium.material.color = Player.MainColor * 1.5f + _noPlayerColor;
             if(Player.IsReady)
             {
                 _banner.material.SetColor("_BaseColor", Player.MainColor);
@@ -61,7 +62,7 @@ namespace BSA
 
             Player = null;
             _podium.material.color = _noPlayerColor;
-            _banner.material.SetColor("_BaseColor", _noPlayerColor);
+            _banner.material.SetColor("_BaseColor", _noPlayerBannerColor);
             _spriteManager.SetStatusPlayerLeft();
 
             if(_coroutine != null)
@@ -81,13 +82,13 @@ namespace BSA
                 }
                 else
                 {
-                    _banner.material.SetColor("_BaseColor", _noPlayerColor);
+                    _banner.material.SetColor("_BaseColor", _noPlayerBannerColor);
                 }
                 _spriteManager.UpdateReadyStatus(Player.IsReady);
             }
             else
             {
-                _banner.material.SetColor("_BaseColor", _noPlayerColor);
+                _banner.material.SetColor("_BaseColor", _noPlayerBannerColor);
             }
         }
 

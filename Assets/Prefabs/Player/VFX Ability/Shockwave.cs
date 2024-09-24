@@ -99,6 +99,8 @@ namespace BSA
 			Renderer particle = _particleWave.gameObject.GetComponent<Renderer>();
             particle.material.SetColor("_EmissionColor", newColor * 4);
             _groundMaterial.material.SetColor("_Color", newColor);
+			// Uncomment this if you want the ground to glow after an ability
+			//_groundMaterial.material.SetColor("_Emission", newColor * 4);
 		}
 		// --- Protected/Private Methods ------------------------------------------------------------------------------
 		private IEnumerator AbilityRoutine()

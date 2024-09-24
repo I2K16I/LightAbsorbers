@@ -54,7 +54,7 @@ namespace BSA
                     pad.ResetHaptics();
                     break;
                 case Rumble.Light:
-                    pad.SetMotorSpeeds(0.0f, 0.55f);
+                    pad.SetMotorSpeeds(0.0f, 0.35f);
                     break;
                 case Rumble.Medium:
                     pad.SetMotorSpeeds(0.2f, 0.75f);

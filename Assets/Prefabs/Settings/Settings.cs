@@ -46,6 +46,10 @@ namespace BSA
 		[SerializeField] private float _updateFrequency = 1f;
         [SerializeField] private float _orbSize = 1f;
 
+		[Header("Beam Settings")]
+		[SerializeField] private bool _beamsCanReflectOrbs = false;
+		[SerializeField] private bool _bordersCanHitPlayer = false;
+
 		[Header("Debug Settings")]
         [SerializeField] private bool _invincibleMode = false;
 
@@ -72,7 +76,8 @@ namespace BSA
 		public float TimeTillEndSpeed => _timeTillEndSpeed;
 		public float UpdateFrequency => _updateFrequency;
 		public float OrbSize => _orbSize;
-
+		public bool ReflectingBeams => _beamsCanReflectOrbs;
+		public bool BordersCanHitPlayer => _bordersCanHitPlayer;
 		public bool InvincibleMode => _invincibleMode;
 
 		// --- Events -------------------------------------------------------------------------------------------------

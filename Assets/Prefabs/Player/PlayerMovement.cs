@@ -47,6 +47,7 @@ namespace BSA
         private Transform _abilityTransform;
         [SerializeField] private Transform _abilitySpawnPoint;
         [SerializeField] private Image _abilityIndicator;
+        [SerializeField] private Image _abilityIndicator2;
 
 
         // --- Properties ---------------------------------------------------------------------------------------------
@@ -196,7 +197,7 @@ namespace BSA
 
         public void OnAbility(InputAction.CallbackContext context)
         {
-            if(GameManager.Instance.State != GameState.Running || IsAlive == false || _isOnCooldown)
+            if(GameManager.Instance.State != GameState.Running || IsAlive == false || _isOnCooldown || _canMove == false)
                 return;
 
             if(context.performed)
@@ -298,6 +299,7 @@ namespace BSA
             _light.color = newColor;
             newColor.a = 0.35f;
             _abilityIndicator.color = newColor;
+            _abilityIndicator2.color = newColor;
             _bodyRenderer.material.color = newColor;
         }
 
@@ -365,13 +367,21 @@ namespace BSA
             {
                 _isOnCooldown = true;
                 _abilityIndicator.fillAmount = 0f;
-                this.AutoLerp(0f, 1f, _abilityCooldown, t => _abilityIndicator.fillAmount = t);
+                _abilityIndicator2.fillAmount = 0f;
+                this.AutoLerp(0f, .5f, _abilityCooldown, SetFillAmount);
                 _ability.AbilityActivated();
                 MyGamepad.SetRumbleForDuration(Rumble.Medium, 0.2f);
                 this.DoAfter(_abilityCooldown, () => _isOnCooldown = false);
             }
             _animator.SetBool("AbilityCharging", false);
 
+
+            void SetFillAmount(float fillAmount)
+            {
+                _abilityIndicator.fillAmount = fillAmount;
+                _abilityIndicator2.fillAmount = fillAmount;
+
+            }
         }
 
         private IEnumerator FloatToGroundRoutine()

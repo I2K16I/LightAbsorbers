@@ -35,6 +35,7 @@ namespace BSA
 			if(_currentNumberOfAttacks <= _maxNumberOfAttacks)
 			{
                 Beam newBeam = Instantiate(_beam);
+
 				newBeam.PerformAttack(pos1, pos2);
 				this.DoAfter(_settings.BeamActiveDuration, EndOfAttack);
 			}

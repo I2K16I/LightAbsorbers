@@ -2,7 +2,9 @@ using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
@@ -19,7 +21,7 @@ namespace BSA
         // Header, Tooltip, Space
 
         [Header("Settings")]
-        [SerializeField] private Settings _settings;
+        [SerializeField] private Settings _settings;        
 
         [Header("Camera and Transitions")]
         [SerializeField] private Vector3 _winningCameraOffset;
@@ -41,11 +43,13 @@ namespace BSA
         [SerializeField] private bool _canStartSolo = false;
         private bool _canRestart;
 
+        private Options _options;
 
         // --- Properties ---------------------------------------------------------------------------------------------
         public static GameManager Instance { get; private set; }
 
         public static Settings Settings => Instance._settings;
+        public static Options Options => Instance._options;
         public int PlayerCount { get { return _players.Count; } }
         public CinemachineVirtualCamera Camera { get; set; }
         public CinemachineVirtualCamera WinningCamera { get; set; }
@@ -69,6 +73,8 @@ namespace BSA
 
             DontDestroyOnLoad(this.gameObject);
             State = GameState.Preparation;
+
+            LoadOptions();
 
             _playerInputManager.onPlayerJoined += OnPlayerJoined;
             _playerInputManager.onPlayerLeft += OnPlayerLeft;
@@ -161,7 +167,6 @@ namespace BSA
         }
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
-
         public void CheckGameStart(PlayerMovement player)
         {
             // Check if all players are ready 
@@ -324,7 +329,6 @@ namespace BSA
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
-
         private void ShowWinner(PlayerMovement winner)
         {
             WinningCamera.transform.position = winner.transform.position + _winningCameraOffset;
@@ -410,6 +414,55 @@ namespace BSA
                 }
             }
         }
+
+        // ----------------------------------------------------------------------------------------
+
+        #region Options
+        public void LoadOptions()
+        {
+            string optionsPath = GetPath();
+            if (File.Exists(optionsPath))
+            {
+                try
+                {
+                    string json = File.ReadAllText(optionsPath);
+                    _options = JsonUtility.FromJson<Options>(json);
+                }
+                catch(System.Exception e)
+                {
+                    _options = new Options();
+                    Debug.LogError($"Failed to load Options. Creating new." +
+                        $"\n{e}");
+                }
+            }
+            else
+            {
+                _options = new Options();
+            }
+        }
+
+        public void SaveOptions()
+        {
+            if(_options == null)
+                throw new UnassignedReferenceException("Options is NULL.");
+
+            try
+            {
+                string json = JsonUtility.ToJson(_options);
+                File.WriteAllText(GetPath(), json);
+            }
+            catch(System.Exception e)
+            {
+                Debug.LogError($"Failed to write Options." +
+                    $"\n{e}");
+            }
+        }
+
+        private string GetPath()
+        {
+            return Path.Combine(Application.persistentDataPath, "options.json");
+        }
+        #endregion
 
         // ----------------------------------------------------------------------------------------
     }
