@@ -91,6 +91,7 @@ namespace BSA
         {
             Vector2 min = new Vector2(-1, 0);
             Vector2 max = new Vector2(0, 1);
+
             screen.anchorMin = min;
             screen.anchorMax = max;
 

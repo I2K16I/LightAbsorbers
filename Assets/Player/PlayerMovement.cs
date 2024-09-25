@@ -78,7 +78,7 @@ namespace BSA
             {
                 //Debug.Log(playstationController.displayName);
                 playstationController.SetLightBarColor(MainColor);
-            }            
+            }
         }
 
         private void FixedUpdate()
@@ -160,7 +160,10 @@ namespace BSA
                 if(MyGamepad != null && IsReady == false)
                 {
                     //Debug.Log($"{name} is ready", this);
-                    MyGamepad.SetRumbleForDuration(Rumble.Light, .1f);
+                    if(OptionsManager.Options.useRumble)
+                    {
+                        MyGamepad.SetRumbleForDuration(Rumble.Light, .1f);
+                    }
                 }
                 IsReady = true;
                 GameManager.Instance.CheckGameStart(this);
@@ -221,6 +224,17 @@ namespace BSA
             }
         }
 
+        public void OnBackToMain(InputAction.CallbackContext context)
+        {
+            if(context.performed == false)
+                return;
+
+            if(GameManager.Instance.State == GameState.Preparation)
+            {
+                GameManager.Instance.ReturnToMain();
+            }
+        }
+
         public void OnDeviceLost()
         {
             GameManager.Instance.DeviceLost(PositionId);
@@ -248,7 +262,10 @@ namespace BSA
 
             if(MyGamepad != null)
             {
-                MyGamepad.SetRumbleForDuration(Rumble.Strong, .4f);
+                if(OptionsManager.Options.useRumble)
+                {
+                    MyGamepad.SetRumbleForDuration(Rumble.Strong, .4f);
+                }
             }
 
             IsAlive = false;
@@ -348,7 +365,10 @@ namespace BSA
             _abilityTransform.position = _abilitySpawnPoint.position;
             _abilityTransform.forward = transform.forward;
             _ability.AbilityPressed();
-            MyGamepad.SetRumble(Rumble.Light);
+            if(OptionsManager.Options.useRumble)
+            {
+                MyGamepad.SetRumble(Rumble.Light);
+            }
             float time = 0f;
 
             while(_performingAbility)
@@ -370,7 +390,10 @@ namespace BSA
                 _abilityIndicator2.fillAmount = 0f;
                 this.AutoLerp(0f, .5f, _abilityCooldown, SetFillAmount);
                 _ability.AbilityActivated();
-                MyGamepad.SetRumbleForDuration(Rumble.Medium, 0.2f);
+                if(OptionsManager.Options.useRumble)
+                {
+                    MyGamepad.SetRumbleForDuration(Rumble.Medium, 0.2f);
+                }
                 this.DoAfter(_abilityCooldown, () => _isOnCooldown = false);
             }
             _animator.SetBool("AbilityCharging", false);
@@ -400,7 +423,7 @@ namespace BSA
             }
         }
 
-        
+
 
         // ----------------------------------------------------------------------------------------
     }

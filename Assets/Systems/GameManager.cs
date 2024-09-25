@@ -43,13 +43,10 @@ namespace BSA
         [SerializeField] private bool _canStartSolo = false;
         private bool _canRestart;
 
-        private Options _options;
-
         // --- Properties ---------------------------------------------------------------------------------------------
         public static GameManager Instance { get; private set; }
 
         public static Settings Settings => Instance._settings;
-        public static Options Options => Instance._options;
         public int PlayerCount { get { return _players.Count; } }
         public CinemachineVirtualCamera Camera { get; set; }
         public CinemachineVirtualCamera WinningCamera { get; set; }
@@ -73,8 +70,6 @@ namespace BSA
 
             DontDestroyOnLoad(this.gameObject);
             State = GameState.Preparation;
-
-            LoadOptions();
 
             _playerInputManager.onPlayerJoined += OnPlayerJoined;
             _playerInputManager.onPlayerLeft += OnPlayerLeft;
@@ -133,7 +128,10 @@ namespace BSA
             if(player.devices[0] is Gamepad g)
             {
                 movement.MyGamepad = g;
-                g.SetRumbleForDuration(Rumble.Light, .1f);
+                if(OptionsManager.Options.useRumble)
+                {
+                    g.SetRumbleForDuration(Rumble.Light, .1f);
+                }
 
                 if(g is DualShockGamepad playstationController)
                 {
@@ -416,53 +414,6 @@ namespace BSA
         }
 
         // ----------------------------------------------------------------------------------------
-
-        #region Options
-        public void LoadOptions()
-        {
-            string optionsPath = GetPath();
-            if (File.Exists(optionsPath))
-            {
-                try
-                {
-                    string json = File.ReadAllText(optionsPath);
-                    _options = JsonUtility.FromJson<Options>(json);
-                }
-                catch(System.Exception e)
-                {
-                    _options = new Options();
-                    Debug.LogError($"Failed to load Options. Creating new." +
-                        $"\n{e}");
-                }
-            }
-            else
-            {
-                _options = new Options();
-            }
-        }
-
-        public void SaveOptions()
-        {
-            if(_options == null)
-                throw new UnassignedReferenceException("Options is NULL.");
-
-            try
-            {
-                string json = JsonUtility.ToJson(_options);
-                File.WriteAllText(GetPath(), json);
-            }
-            catch(System.Exception e)
-            {
-                Debug.LogError($"Failed to write Options." +
-                    $"\n{e}");
-            }
-        }
-
-        private string GetPath()
-        {
-            return Path.Combine(Application.persistentDataPath, "options.json");
-        }
-        #endregion
 
         // ----------------------------------------------------------------------------------------
     }
