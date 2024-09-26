@@ -140,17 +140,38 @@ namespace BSA.UI
         private void OnMasterVolumeChanged(Carousel.Item item)
         {
             OptionsManager.Options.masterVolume = item.value;
-            _audioMixer.SetFloat("MasterVolume", -80f + 10*item.value);
+            if(item.value == 0)
+            {
+                _audioMixer.SetFloat("MasterVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("MasterVolume", -40f + 5 * item.value);
+            }
         }
         private void OnMusicVolumeChanged(Carousel.Item item)
         {
             OptionsManager.Options.musicVolume = item.value;
-            _audioMixer.SetFloat("MusicVolume", -80f + 10 * item.value);
+            if(item.value == 0)
+            {
+                _audioMixer.SetFloat("MusicVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("MusicVolume", -40f + 5 * item.value);
+            }
         }
         private void OnSfxVolumeChanged(Carousel.Item item)
         {
             OptionsManager.Options.sfxVolume = item.value;
-            _audioMixer.SetFloat("SfxVolume", -80f + 10 * item.value);
+            if(item.value == 0)
+            {
+                _audioMixer.SetFloat("SfxVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("SfxVolume", -40f + 5 * item.value);
+            }
         }
         private void OnUseRumbleChanged(Carousel.Item item)
         {
@@ -211,15 +232,45 @@ namespace BSA.UI
 
             // TODO: Set initial values for all our MenuItems to match the values found in Options
             _masterVolume.SetItem(options.masterVolume, true);
-            _audioMixer.SetFloat("MasterVolume", -80f + 10 * options.masterVolume);
+            //_audioMixer.SetFloat("MasterVolume", -80f + 10 * options.masterVolume);
             _musicVolume.SetItem(options.musicVolume, true);
-            _audioMixer.SetFloat("MusicVolume", -80f + 10 * options.musicVolume);
+            //_audioMixer.SetFloat("MusicVolume", -80f + 10 * options.musicVolume);
             _sfxVolume.SetItem(options.sfxVolume, true);
-            _audioMixer.SetFloat("SfxVolume", -80f + 10 * options.sfxVolume);
+            //_audioMixer.SetFloat("SfxVolume", -80f + 10 * options.sfxVolume);
+            SetAllAudios();
 
             _useRumble.SetItem(options.useRumble ? 1 : 0, true);
             _beamsReflectOrbs.SetItem(options.beamsReflectOrbs ? 1 : 0, true);
             _bordersKillPlayers.SetItem(options.bordersKillPlayers ? 1 : 0, true);
+        }
+
+        private void SetAllAudios()
+        {
+            Options options = OptionsManager.Options;
+            if (options.masterVolume == 0)
+            {
+                _audioMixer.SetFloat("MasterVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("MasterVolume", -40f + 5 * options.masterVolume);
+            }
+            if (options.musicVolume == 0)
+            {
+                _audioMixer.SetFloat("MusicVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("MusicVolume", -40f + 5 * options.musicVolume);
+            }
+            if (options.sfxVolume == 0)
+            {
+                _audioMixer.SetFloat("SfxVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("SfxVolume", -40f + 5 * options.sfxVolume);
+            }
         }
 
         // ----------------------------------------------------------------------------------------

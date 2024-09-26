@@ -21,6 +21,12 @@ namespace BSA
 
         [SerializeField] private List<Banner> _banners;
 
+        [Header("Audio")]
+        [SerializeField] private AudioSource _audioSource;
+        [SerializeField] private AudioClip _playerJoinClip;
+        [SerializeField] private AudioClip _playerLeaveClip;
+        [SerializeField] private AudioClip _playerReady;
+
 
         // --- Properties ---------------------------------------------------------------------------------------------
 
@@ -46,18 +52,25 @@ namespace BSA
             playerMaterial.isInUse = true;
             player.ChangeMaterial();
 
+            _audioSource.clip = _playerJoinClip;
+            _audioSource.Play();
+
             Banner banner = _banners[player.PositionId];
             banner.AssignPlayer(player);
         }
 
         public void ColorBanner(PlayerMovement player)
         {
+
+            _audioSource.clip = _playerReady;
+            _audioSource.Play();
+
             _banners[player.PositionId].UpdateReady();
         }
 
         public void DisableCloths()
         {
-            foreach (Banner item in _banners)
+            foreach(Banner item in _banners)
             {
                 item.DisableCloth();
             }
@@ -70,6 +83,9 @@ namespace BSA
 
             Banner banner = _banners[player.PositionId];
             banner.RemovePlayer();
+
+            _audioSource.clip = _playerLeaveClip;
+            _audioSource.Play();
 
             // Iterate banners right of the one that got removed
             int startIndex = player.PositionId + 1;

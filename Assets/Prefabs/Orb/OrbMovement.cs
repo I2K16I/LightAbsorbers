@@ -12,6 +12,7 @@ namespace BSA
         [SerializeField] private Transform _center;
         [SerializeField] private float _deceleration = .01f;
         [SerializeField] private SphereCollider _collider;
+        [SerializeField] private MeshRenderer _orb;
 
         private Vector3 _moveDirection = Vector3.zero;
         private Vector3 _directionBuffer = Vector3.zero;
@@ -20,6 +21,10 @@ namespace BSA
         private float _endSpeed;
         private float _speedMult = 1f;
         private float _timeTillEndSpeed;
+        private Color _startEmission;
+
+        private int _orbLayer;
+        private int _refelctedLayer;
 
 
         // --- Properties ---------------------------------------------------------------------------------------------
@@ -37,6 +42,7 @@ namespace BSA
             _endSpeed = _settings.OrbEndSpeed;
             _timeTillEndSpeed = _settings.TimeTillEndSpeed;
             _currentMoveSpeed = _startSpeed;
+            _startEmission = _orb.material.GetColor("_EmissionColor");
 
             float randomAngle = Random.Range(0f, 360f);
             _moveDirection = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.forward;
@@ -45,16 +51,18 @@ namespace BSA
             //_moveDirection = transform.forward;
         }
 
+        private void Start()
+        {
+            _orbLayer = LayerMask.NameToLayer("Orb");
+            _refelctedLayer = LayerMask.NameToLayer("OrbNoCollision");
+        }
+
         private void FixedUpdate()
         {
             if (IsPaused)
             {
                 _rigidBody.velocity = Vector3.zero;
                 return;
-            }
-            if (_speedMult > 1)
-            {
-                _speedMult -= _deceleration;
             }
             _moveDirection.y = 0f;
             //transform.position += _moveDirection * Time.fixedDeltaTime * _moveSpeed;
@@ -117,12 +125,15 @@ namespace BSA
             this.AutoLerp(_startSpeed, _endSpeed, _timeTillEndSpeed, speed => _currentMoveSpeed = speed);
         }
 
-        public void Reflect(Vector3 direction, float speedMultiplier)
+        public void Reflect(Vector3 direction, float speedMultiplier, Color newColor)
         {
+            gameObject.layer = _refelctedLayer;
+            _orb.material.SetColor("_EmissionColor", newColor * 4);
             direction.y = 0;
             _speedMult = speedMultiplier;
             //this.AutoLerp(_speedMult, 1f, 3f, reducedSpeed => _speedMult = reducedSpeed);
             _moveDirection = direction;
+            StartCoroutine(ReduceSpeedMultRoutine());
         }
 
         // --- Protected/Private Methods ------------------------------------------------------------------------------
@@ -135,6 +146,19 @@ namespace BSA
             _moveDirection = Quaternion.Euler(0f, 2f * angle, 0f) * -_moveDirection;
         }
 
+        private IEnumerator ReduceSpeedMultRoutine()
+        {
+            do
+            {
+                yield return new WaitForSeconds(0.02f);
+                _speedMult -= _deceleration;
+
+            } while(_speedMult > 1f);
+
+            _speedMult = 1f;
+            gameObject.layer = _orbLayer;
+            _orb.material.SetColor("_EmissionColor", _startEmission);
+        }
         // ----------------------------------------------------------------------------------------
     }
 }

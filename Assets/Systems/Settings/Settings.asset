@@ -32,4 +32,4 @@ MonoBehaviour:
   _orbSize: 1
   _beamsCanReflectOrbs: 1
   _bordersCanHitPlayer: 1
-  _invincibleMode: 1
+  _invincibleMode: 0

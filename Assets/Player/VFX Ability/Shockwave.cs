@@ -26,6 +26,11 @@ namespace BSA
 		[SerializeField, Range(0f, 90f)] float _maxAttackAngle = 30f;
 		[SerializeField] LayerMask _collisionLayer;
 		[SerializeField] bool _testPlay = false;
+		[Space]
+		[Header("Audio")]
+		[SerializeField] AudioSource _abilitySound;
+		[SerializeField] AudioClip _buildUpClip;
+		[SerializeField] AudioClip _ShockwaveClip;
 
 		private float _currentRadius = 0f;
 
@@ -71,23 +76,26 @@ namespace BSA
 		public void AbilityPressed()
 		{
 			_buildUp.Play();
-            // If the GameObject is persistend and does not get respawned every time the ability is used it needs to be positioned here.
-            // Possibly a parameter of type Transform for the new Parent
-            // Something like this:
-            // transform.parent = transformParamenter
-            // transform.position = transformParamenter.position
-            // transform.forward = transformParamenter.forward
+			//_abilitySound.loop = true;
+			//_abilitySound.clip = _buildUpClip;
+			//_abilitySound.Play();
+            
         }
 
         public void AbilityCanceled()
 		{
 			_buildUp.Stop();
-		}
+			//_abilitySound.Stop();
+            
+        }
 
-		public void AbilityActivated()
+        public void AbilityActivated()
 		{
 			_buildUp.Stop();
 			transform.parent = null;
+            //_abilitySound.loop = false;
+            //_abilitySound.clip = _ShockwaveClip;
+			_abilitySound.Play();
 			StartCoroutine(AbilityRoutine());
 		}
 
@@ -105,7 +113,7 @@ namespace BSA
 		// --- Protected/Private Methods ------------------------------------------------------------------------------
 		private IEnumerator AbilityRoutine()
 		{
-			//_waveObject.SetActive(true);
+            //_waveObject.SetActive(true);
 			_particleWave.Play();
 			_groundMaterial.material.SetFloat("_TotalAlpha", 0);
 			float scale = transform.localScale.x;
@@ -148,7 +156,7 @@ namespace BSA
 							float distanceT = 1f - Mathf.InverseLerp(.5f, _attackRadius, distance);
 							float speedMultiplier = Mathf.Lerp(1f, 5f, distanceT);
 
-							orb.Reflect(transform.forward, speedMultiplier);
+							orb.Reflect(transform.forward, speedMultiplier, _groundMaterial.material.color);
 							positiveHits.Add(colliders[i]);
                         }
                     }

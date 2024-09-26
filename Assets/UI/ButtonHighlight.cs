@@ -32,8 +32,12 @@ namespace BSA
         // 0 again.
         public void OnSelect(BaseEventData eventData)
         {
+            if(_audioSource.enabled)
+            {
+                _audioSource.Play();
+            }
+
             _currentMax = _underline.anchorMax.x;
-            _audioSource.Play();
 
             if(_openAndCloseRoutine != null)
             {

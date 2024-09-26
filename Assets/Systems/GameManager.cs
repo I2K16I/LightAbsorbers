@@ -254,6 +254,7 @@ namespace BSA
             var alivePlayers = _players.Where(p => p.IsAlive);
             if(alivePlayers.Count() == 1)
             {
+                MusicPlayer.Instance.StopMusicWithFade();
                 State = GameState.Finished;
                 PlayerMovement winner = alivePlayers.First();
 
@@ -291,12 +292,14 @@ namespace BSA
         public void DeviceLost(int playerNumber)
         {
             Time.timeScale = 0.0f;
+            MusicPlayer.Instance.PauseMusic();
             TransitionHandler.ShowDeviceLostScreen(playerNumber);
         }
 
         public void DeviceRegained()
         {
             Time.timeScale = 1.0f;
+            MusicPlayer.Instance.ResumeMusic();
             TransitionHandler.HideDeviceLostScreen();
         }
 
@@ -313,16 +316,24 @@ namespace BSA
             _consecutiveOrbAttacks = _settings.StartAmountOfAttacks;
             float transitionTime = _settings.TransitionTime / 2;
             TransitionHandler.SwtichFromScene(transitionTime / 2);
+            MusicPlayer.Instance.StopMusicWithFade(transitionTime);
             this.DoAfter(transitionTime, () => SceneManager.LoadScene(2));
         }
 
-        public void ReturnToMain()
+        public void ReturnToMain(bool restartMusic = false)
         {
             SceneManager.MoveGameObjectToScene(this.gameObject, SceneManager.GetActiveScene());
             _players.ForEach(p => { p.SetToActiveScene(); });
             State = GameState.None;
             float transitionTime = _settings.TransitionTime / 2;
             TransitionHandler.SwtichFromScene(transitionTime / 2);
+
+            if(restartMusic)
+            {
+                MusicPlayer.Instance.StopMusicWithFade(transitionTime / 2);
+                this.DoAfter(transitionTime, () => MusicPlayer.Instance.SwitchMusic(MusicType.Menu));
+            }
+
             this.DoAfter(transitionTime, () => SceneManager.LoadScene(0));
         }
 
@@ -330,6 +341,7 @@ namespace BSA
         private void ShowWinner(PlayerMovement winner)
         {
             WinningCamera.transform.position = winner.transform.position + _winningCameraOffset;
+            MusicPlayer.Instance.SwitchMusic(MusicType.Win);
             UpdateCameras();
             winner.EndGame();
             this.DoAfter(2.5f, () => _canRestart = true);
@@ -337,11 +349,18 @@ namespace BSA
         private IEnumerator MoveToGameScene()
         {
             yield return new WaitForSeconds(_settings.StartDelay);
+
+            float transitionTime = _settings.TransitionTime;
+            
+
             State = GameState.Running;
             _playerInputManager.DisableJoining();
-            float transitionTime = _settings.TransitionTime;
 
             TransitionHandler.SwtichFromScene(transitionTime / 2);
+
+            MusicPlayer.Instance.StopMusicWithFade(transitionTime);
+            //MusicPlayer.Instance.SwitchMusic(MusicType.Game, false);
+
             yield return new WaitForSeconds(transitionTime / 2);
 
             _countdownBar.gameObject.SetActive(false);
@@ -366,6 +385,9 @@ namespace BSA
             OrbManager.StartOrbs();
             _increaseAttacksRoutine = StartCoroutine(IncreaseAttacksRoutine());
             _attackRoutine = StartCoroutine(StartRecurringOrbAttacks());
+
+            MusicPlayer.Instance.SwitchMusic(MusicType.Game);
+            //MusicPlayer.Instance.PlayMusic();
         }
 
         private IEnumerator IncreaseAttacksRoutine()

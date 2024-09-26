@@ -89,9 +89,33 @@ namespace BSA
 
         private void SetAudioDelayed()
         {
-            _audioMixer.SetFloat("MasterVolume", -80f + 10 * Options.masterVolume);
-            _audioMixer.SetFloat("MusicVolume", -80f + 10 * Options.musicVolume);
-            _audioMixer.SetFloat("SfxVolume", -80f + 10 * Options.sfxVolume);
+            //_audioMixer.SetFloat("MasterVolume", -40f + 10 * Options.masterVolume);
+            //_audioMixer.SetFloat("MusicVolume", -40f + 10 * Options.musicVolume);
+            //_audioMixer.SetFloat("SfxVolume", -40f + 10 * Options.sfxVolume);
+            if(Options.masterVolume == 0)
+            {
+                _audioMixer.SetFloat("MasterVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("MasterVolume", -40f + 5 * Options.masterVolume);
+            }
+            if(Options.musicVolume == 0)
+            {
+                _audioMixer.SetFloat("MusicVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("MusicVolume", -40f + 5 * Options.musicVolume);
+            }
+            if(Options.sfxVolume == 0)
+            {
+                _audioMixer.SetFloat("SfxVolume", -80f);
+            }
+            else
+            {
+                _audioMixer.SetFloat("SfxVolume", -40f + 5 * Options.sfxVolume);
+            }
         }
 
         // ----------------------------------------------------------------------------------------

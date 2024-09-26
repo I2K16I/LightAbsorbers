@@ -49,6 +49,9 @@ namespace BSA
         [SerializeField] private Image _abilityIndicator;
         [SerializeField] private Image _abilityIndicator2;
 
+        [Header("Audio")]
+        [SerializeField] AudioSource _audioSource;
+
 
         // --- Properties ---------------------------------------------------------------------------------------------
         // Getter property syntax
@@ -157,16 +160,19 @@ namespace BSA
 
             if((GameManager.Instance.State == GameState.Preparation))
             {
-                if(MyGamepad != null && IsReady == false)
+                if(IsReady == false)
                 {
-                    //Debug.Log($"{name} is ready", this);
-                    if(OptionsManager.Options.useRumble)
+                    if(MyGamepad != null)
                     {
-                        MyGamepad.SetRumbleForDuration(Rumble.Light, .1f);
+                        //Debug.Log($"{name} is ready", this);
+                        if(OptionsManager.Options.useRumble)
+                        {
+                            MyGamepad.SetRumbleForDuration(Rumble.Light, .1f);
+                        }
                     }
+                    IsReady = true;
+                    GameManager.Instance.CheckGameStart(this);
                 }
-                IsReady = true;
-                GameManager.Instance.CheckGameStart(this);
             }
             else if(GameManager.Instance.State == GameState.Finished)
             {
@@ -194,7 +200,7 @@ namespace BSA
             }
             else if(GameManager.Instance.State == GameState.Finished)
             {
-                GameManager.Instance.ReturnToMain();
+                GameManager.Instance.ReturnToMain(true);
             }
         }
 
@@ -270,7 +276,8 @@ namespace BSA
 
             IsAlive = false;
             _animator.SetBool("isHit", true);
-            this.DoAfter(.5f, () => _animator.SetBool("isHit", false));
+            _audioSource.Play();
+            //this.DoAfter(.5f, () => _animator.SetBool("isHit", false));
             //_animator.SetTrigger("gotHit");
             StartCoroutine(FloatToGroundRoutine());
             GameManager.Instance.CheckGameEnd();
@@ -302,6 +309,7 @@ namespace BSA
 
         public void SetToActiveScene()
         {
+            transform.parent = null;
             _ability.transform.parent = this.transform;
             SceneManager.MoveGameObjectToScene(this.gameObject, SceneManager.GetActiveScene());
         }

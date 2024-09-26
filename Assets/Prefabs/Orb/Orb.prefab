@@ -53,6 +53,7 @@ MonoBehaviour:
   _center: {fileID: 63483301423888043}
   _deceleration: 0.02
   _collider: {fileID: 4435180108063750120}
+  _orb: {fileID: 5294093404476460152}
 --- !u!54 &7886814473799548170
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -353,6 +354,12 @@ Transform:
 --- !u!4 &832344983787566381 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4808824982870569694, guid: 0678665b805efc249b4faa9cf3d652e1,
+    type: 3}
+  m_PrefabInstance: {fileID: 5274125889934346227}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5294093404476460152 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 20565726250437515, guid: 0678665b805efc249b4faa9cf3d652e1,
     type: 3}
   m_PrefabInstance: {fileID: 5274125889934346227}
   m_PrefabAsset: {fileID: 0}
