@@ -83,7 +83,7 @@ namespace BSA.UI
                 return;
 
             _activeItemIndex = Mathf.Clamp(index, 0, _items.Count - 1);
-            Debug.Log($"{name} -> {_activeItemIndex:00} ({index})", this);
+            //Debug.Log($"{name} -> {_activeItemIndex:00} ({index})", this);
 
             Item selection = ActiveItem;
             _valueLabel.text = selection.displayString;

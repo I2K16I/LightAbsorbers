@@ -25,7 +25,7 @@ namespace BSA
         {
             GameManager.Instance.OrbManager = this;
 
-            int amountOfOrbsToCreate = GameManager.Settings.NumberOfOrbs;
+            int amountOfOrbsToCreate = OptionsManager.Options.numberOfOrbs + 1;
             if(amountOfOrbsToCreate > _spawnPoints.Count)
             {
                 amountOfOrbsToCreate = _spawnPoints.Count;
