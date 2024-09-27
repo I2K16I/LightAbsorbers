@@ -62,9 +62,13 @@ namespace BSA
             _deviceLostText.text = "Controller " + displayedDeviceNumber + " disconnected!";
         }
 
+        public void ShowWinnerBanner()
+        {
+            _endScreenPrompts.SlideWinIn();
+        }
         public void ShowEndGamePrompts()
         {
-            _endScreenPrompts.SlideIn();
+            _endScreenPrompts.SlidePromptsIn();
         }
 
         public void HideDeviceLostScreen()

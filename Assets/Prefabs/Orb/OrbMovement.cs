@@ -14,6 +14,7 @@ namespace BSA
         [SerializeField] private SphereCollider _collider;
         [SerializeField] private MeshRenderer _orb;
 
+
         private Vector3 _moveDirection = Vector3.zero;
         private Vector3 _directionBuffer = Vector3.zero;
         private Settings _settings;
@@ -47,7 +48,6 @@ namespace BSA
             float randomAngle = Random.Range(0f, 360f);
             _moveDirection = Quaternion.Euler(0f, randomAngle, 0f) * Vector3.forward;
             IsPaused = true;
-
             //_moveDirection = transform.forward;
         }
 

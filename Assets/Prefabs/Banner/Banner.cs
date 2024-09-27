@@ -18,8 +18,10 @@ namespace BSA
         [SerializeField] private Transform _spawnPoint;
         [SerializeField] private Cloth _bannerCloth;
         [SerializeField] private Transform _targetPosition;
+        [SerializeField] private AudioSource _bannerAudio;
         private Vector3 _startPos;
         private Coroutine _coroutine;
+        private Coroutine _innerRoutine;
         // --- Properties ---------------------------------------------------------------------------------------------
         public PlayerMovement Player { get; private set; }
 
@@ -50,6 +52,10 @@ namespace BSA
 
             if(_coroutine != null)
             {
+                if (_innerRoutine != null)
+                {
+                    StopCoroutine(_innerRoutine);
+                }
                 StopCoroutine(_coroutine);
             }
             _coroutine = StartCoroutine(UpdatePodiumRoutine());
@@ -67,6 +73,10 @@ namespace BSA
 
             if(_coroutine != null)
             {
+                if(_innerRoutine != null)
+                {
+                    StopCoroutine(_innerRoutine);
+                }
                 StopCoroutine(_coroutine);
             }
             _coroutine = StartCoroutine(UpdatePodiumRoutine());
@@ -76,6 +86,7 @@ namespace BSA
         {
             if(Player != null)
             {
+                _bannerAudio.Play();
                 if(Player.IsReady)
                 {
                     _banner.material.SetColor("_BaseColor", Player.MainColor);
@@ -99,25 +110,26 @@ namespace BSA
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private IEnumerator UpdatePodiumRoutine()
         {
-            yield return new WaitForSeconds(.2f);
             float startY = 0f;
             float targetY = 0f;
             Vector3 newPos = _startPos;
 
             if(Player != null)
             {
+                Player.transform.parent = _podium.transform;
+                yield return new WaitForSeconds(.2f);
                 startY = _podiumObject.position.y;
                 targetY = _targetPosition.position.y;
-                Player.transform.parent = _podium.transform;
-                yield return this.AutoLerp(startY, targetY, 1f, SetNewPos, EasingType.EasyOutQuart);
+                yield return _innerRoutine = this.AutoLerp(startY, targetY, 1f, SetNewPos, EasingType.EasyOutQuart);
             }
             else
             {
+                yield return new WaitForSeconds(.2f);
                 startY = _podiumObject.position.y;
                 targetY = _startPos.y;
-                yield return this.AutoLerp(startY, targetY, 1f, SetNewPos, EasingType.EasyInQuart);
+                yield return _innerRoutine = this.AutoLerp(startY, targetY, 1f, SetNewPos, EasingType.EasyInQuart);
             }
-
+            _innerRoutine = null;
 
 
             if(Player != null)

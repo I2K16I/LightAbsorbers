@@ -502,6 +502,46 @@ PrefabInstance:
       propertyPath: _bannerManager
       value: 
       objectReference: {fileID: 7448737243451797958}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_Name
+      value: Back To Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_SingletonActionBindings.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_SingletonActionBindings.Array.data[0].m_Id
+      value: a62823c1-d04c-4cdf-89f0-d737f48305c1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_SingletonActionBindings.Array.data[1].m_Id
+      value: d87c05db-a21d-42dd-be58-d92e95739223
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_SingletonActionBindings.Array.data[0].m_Path
+      value: <Gamepad>/buttonNorth
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_SingletonActionBindings.Array.data[1].m_Path
+      value: <Keyboard>/escape
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_SingletonActionBindings.Array.data[0].m_Action
+      value: Back To Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 4027731600585667291, guid: cd9b117c1e4d1124f8a3bc192409853b,
+        type: 3}
+      propertyPath: _backToMenu.m_SingletonActionBindings.Array.data[1].m_Action
+      value: Back To Menu
+      objectReference: {fileID: 0}
     - target: {fileID: 7287584871672517731, guid: cd9b117c1e4d1124f8a3bc192409853b,
         type: 3}
       propertyPath: m_DefaultActionMap
@@ -629,6 +669,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836785440640696892, guid: 68326b62f2b20284f8ebc12163f28691,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836785440640696892, guid: 68326b62f2b20284f8ebc12163f28691,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 5281365806502291131, guid: 68326b62f2b20284f8ebc12163f28691,
         type: 3}
@@ -873,6 +923,7 @@ GameObject:
   m_Component:
   - component: {fileID: 909820918}
   - component: {fileID: 909820919}
+  - component: {fileID: 909820920}
   m_Layer: 5
   m_Name: Prompts
   m_TagString: Untagged
@@ -927,6 +978,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &909820920
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909820917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2341a0152df356849a653564a1d62eb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _prompts: {fileID: 909820918}
 --- !u!114 &1157652994 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1667937412099775260, guid: 68326b62f2b20284f8ebc12163f28691,

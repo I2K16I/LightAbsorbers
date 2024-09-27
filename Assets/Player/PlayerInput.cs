@@ -62,15 +62,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""BackToMain"",
-                    ""type"": ""Button"",
-                    ""id"": ""6ddbe271-b3bc-40c3-bfc5-dccfd6356922"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -219,17 +210,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2d5c6910-c25a-46e3-9462-c4580c19342f"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Leave"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""d4b396cb-ffc0-4594-bef6-a0057b1cbcd7"",
                     ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
@@ -293,28 +273,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Ability"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5d5091c4-cb0e-4326-b10e-2636b1890141"",
-                    ""path"": ""<Keyboard>/escape"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""BackToMain"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""19fa4b75-35dc-402d-9a50-8c4d4bfc2ba3"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""BackToMain"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -327,7 +285,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_Ready = m_Player.FindAction("Ready", throwIfNotFound: true);
         m_Player_Leave = m_Player.FindAction("Leave", throwIfNotFound: true);
         m_Player_Ability = m_Player.FindAction("Ability", throwIfNotFound: true);
-        m_Player_BackToMain = m_Player.FindAction("BackToMain", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -393,7 +350,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Ready;
     private readonly InputAction m_Player_Leave;
     private readonly InputAction m_Player_Ability;
-    private readonly InputAction m_Player_BackToMain;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
@@ -402,7 +358,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         public InputAction @Ready => m_Wrapper.m_Player_Ready;
         public InputAction @Leave => m_Wrapper.m_Player_Leave;
         public InputAction @Ability => m_Wrapper.m_Player_Ability;
-        public InputAction @BackToMain => m_Wrapper.m_Player_BackToMain;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -424,9 +379,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Ability.started += instance.OnAbility;
             @Ability.performed += instance.OnAbility;
             @Ability.canceled += instance.OnAbility;
-            @BackToMain.started += instance.OnBackToMain;
-            @BackToMain.performed += instance.OnBackToMain;
-            @BackToMain.canceled += instance.OnBackToMain;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -443,9 +395,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Ability.started -= instance.OnAbility;
             @Ability.performed -= instance.OnAbility;
             @Ability.canceled -= instance.OnAbility;
-            @BackToMain.started -= instance.OnBackToMain;
-            @BackToMain.performed -= instance.OnBackToMain;
-            @BackToMain.canceled -= instance.OnBackToMain;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -469,6 +418,5 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         void OnReady(InputAction.CallbackContext context);
         void OnLeave(InputAction.CallbackContext context);
         void OnAbility(InputAction.CallbackContext context);
-        void OnBackToMain(InputAction.CallbackContext context);
     }
 }

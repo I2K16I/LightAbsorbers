@@ -152,7 +152,7 @@ namespace BSA.UI
             }
             else
             {
-                _audioMixer.SetFloat("MasterVolume", -40f + 5 * item.value);
+                _audioMixer.SetFloat("MasterVolume", -50f + 5 * item.value);
             }
         }
         private void OnMusicVolumeChanged(Carousel.Item item)
@@ -164,7 +164,7 @@ namespace BSA.UI
             }
             else
             {
-                _audioMixer.SetFloat("MusicVolume", -40f + 5 * item.value);
+                _audioMixer.SetFloat("MusicVolume", -50f + 5 * item.value);
             }
         }
         private void OnSfxVolumeChanged(Carousel.Item item)
@@ -176,7 +176,7 @@ namespace BSA.UI
             }
             else
             {
-                _audioMixer.SetFloat("SfxVolume", -40f + 5 * item.value);
+                _audioMixer.SetFloat("SfxVolume", -50f + 5 * item.value);
             }
         }
         private void OnNumberOfOrbsChanged(Carousel.Item item)
@@ -316,7 +316,7 @@ namespace BSA.UI
             }
             else
             {
-                _audioMixer.SetFloat("MasterVolume", -40f + 5 * options.masterVolume);
+                _audioMixer.SetFloat("MasterVolume", -50f + 5 * options.masterVolume);
             }
             if(options.musicVolume == 0)
             {
@@ -324,7 +324,7 @@ namespace BSA.UI
             }
             else
             {
-                _audioMixer.SetFloat("MusicVolume", -40f + 5 * options.musicVolume);
+                _audioMixer.SetFloat("MusicVolume", -50f + 5 * options.musicVolume);
             }
             if(options.sfxVolume == 0)
             {
@@ -332,7 +332,7 @@ namespace BSA.UI
             }
             else
             {
-                _audioMixer.SetFloat("SfxVolume", -40f + 5 * options.sfxVolume);
+                _audioMixer.SetFloat("SfxVolume", -50f + 5 * options.sfxVolume);
             }
         }
 

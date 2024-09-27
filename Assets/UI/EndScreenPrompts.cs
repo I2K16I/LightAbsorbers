@@ -12,52 +12,48 @@ namespace BSA
 		// --- Fields -------------------------------------------------------------------------------------------------
 		[SerializeField] private RectTransform _promptTransform;
 		[SerializeField] private float _duration = 1f;
+
+		[SerializeField] private RectTransform _winBannerTransform;
+
 		// --- Properties ---------------------------------------------------------------------------------------------
 		
 		// --- Events -------------------------------------------------------------------------------------------------
 
 		// --- Unity Functions ----------------------------------------------------------------------------------------
-		private void Awake()
+
+        // --- Interface implementations ------------------------------------------------------------------------------
+
+        // --- Event callbacks ----------------------------------------------------------------------------------------
+
+        // --- Public/Internal Methods --------------------------------------------------------------------------------
+        public void SlideWinIn()
+        {
+            StartCoroutine(SetPosOverTime(200f, _winBannerTransform));
+
+        }
+        public void SlidePromptsIn()
 		{
-			
-		}		
-
-		// --- Interface implementations ------------------------------------------------------------------------------
-
-		// --- Event callbacks ----------------------------------------------------------------------------------------
-
-		// --- Public/Internal Methods --------------------------------------------------------------------------------
-		public void SlideIn()
-		{
-			StartCoroutine(SetMinAndMaxAnchor());
+			StartCoroutine(SetPosOverTime(-200f, _promptTransform));
 		}
 		// --- Protected/Private Methods ------------------------------------------------------------------------------
-		private IEnumerator SetMinAndMaxAnchor()
+		private IEnumerator SetPosOverTime(float startPos, RectTransform objectToMove)
 		{
-            Vector2 min = new Vector2(0, -1);
-            Vector2 max = new Vector2(0, 0);
+			Vector2 newPos = new Vector2(0, startPos);
 
-            _promptTransform.anchorMin = min;
-            _promptTransform.anchorMax = max;
+            objectToMove.localPosition= newPos;
 
-            this.AutoLerp(min.y, min.y + 1, _duration, SetAnchorMin);
-            yield return this.AutoLerp(max.y, max.y + 1, _duration, SetAnchorMax);
+            yield return this.AutoLerp(newPos.y, 0, _duration, SetPosY);
 
-            _promptTransform.anchorMin = new Vector2(0, 0);
-            _promptTransform.anchorMax = new Vector2(1, 1);
+            objectToMove.localPosition = new Vector2(0, 0);
 
-            void SetAnchorMin(float minimum)
+            void SetPosY(float minimum)
             {
-                min.y = minimum;
-                _promptTransform.anchorMin = min;
+                newPos.y = minimum;
+                objectToMove.localPosition = newPos;
 
-            }
-            void SetAnchorMax(float maximum)
-            {
-                max.y = maximum;
-                _promptTransform.anchorMax = max;
             }
         }
-		// ----------------------------------------------------------------------------------------
-	}
+
+        // ----------------------------------------------------------------------------------------
+    }
 }

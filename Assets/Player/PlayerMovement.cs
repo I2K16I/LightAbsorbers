@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
@@ -223,21 +222,6 @@ namespace BSA
 
                 if(MyGamepad == null)
                     return;
-            }
-        }
-
-        public void OnBackToMain(InputAction.CallbackContext context)
-        {
-            if(context.performed == false)
-                return;
-
-            if(GameManager.Instance.State == GameState.Preparation)
-            {
-                GameManager.Instance.ReturnToMain();
-            }
-            else if(GameManager.Instance.State == GameState.Finished)
-            {
-                GameManager.Instance.ReturnToMain(true);
             }
         }
 

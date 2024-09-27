@@ -10,8 +10,8 @@ namespace BSA
 	public class Options
 	{
 		// --- Fields -------------------------------------------------------------------------------------------------
-		public int masterVolume = 5;
-		public int musicVolume = 8;
+		public int masterVolume = 8;
+		public int musicVolume = 5;
 		public int sfxVolume = 8;
 		public int numberOfOrbs = 12;
 		public bool useRumble = true;

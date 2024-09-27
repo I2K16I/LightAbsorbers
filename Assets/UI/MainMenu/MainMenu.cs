@@ -63,7 +63,7 @@ namespace BSA.UI
         {
             _audioSource.clip = _startAudio;
             _audioSource.Play();
-            _transitionManager.SwtichFromScene(1f);
+            _transitionManager.SwtichFromScene(.5f);
             this.DoAfter(1f, LoadGame);
         }
 
@@ -76,14 +76,18 @@ namespace BSA.UI
 
         private void OnExitClicked()
         {
-            if(Application.isEditor)
-            {
-                EditorApplication.isPlaying = false;
-            }
-            else
-            {
-                Application.Quit();
-            }
+#if UNITY_EDITOR
+            //if(Application.isEditor)
+            //{
+            //    EditorApplication.isPlaying = false;
+            //}
+            //else
+            //{
+            //    Application.Quit();
+            //}
+            EditorApplication.isPlaying = false;
+#endif
+            Application.Quit();
         }
         private void CloseedOptionsMenu()
         {

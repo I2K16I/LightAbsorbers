@@ -25,7 +25,6 @@ namespace BSA
         [SerializeField] private AudioSource _audioSource;
         [SerializeField] private AudioClip _playerJoinClip;
         [SerializeField] private AudioClip _playerLeaveClip;
-        [SerializeField] private AudioClip _playerReady;
 
 
         // --- Properties ---------------------------------------------------------------------------------------------
@@ -61,10 +60,6 @@ namespace BSA
 
         public void ColorBanner(PlayerMovement player)
         {
-
-            _audioSource.clip = _playerReady;
-            _audioSource.Play();
-
             _banners[player.PositionId].UpdateReady();
         }
 

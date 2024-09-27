@@ -50,6 +50,31 @@ MonoBehaviour:
   _countdownBar: {fileID: 0}
   _playerInputManager: {fileID: 9137496567158723666}
   _bannerManager: {fileID: 0}
+  _backToMenu:
+    m_Name: Back To Menu
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: c916a7c1-a1a2-420a-ac70-f2f9522032c8
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: 46da74e8-dd13-428d-92c8-6c784a10204f
+      m_Path: <Gamepad>/buttonNorth
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Back To Menu
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 3a445895-e971-4fed-a66e-35ce4ca31cdd
+      m_Path: <Keyboard>/escape
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Back To Menu
+      m_Flags: 0
+    m_Flags: 0
   _canStartSolo: 0
 --- !u!114 &9137496567158723666
 MonoBehaviour:

@@ -98,7 +98,7 @@ namespace BSA
             }
             else
             {
-                _audioMixer.SetFloat("MasterVolume", -40f + 5 * Options.masterVolume);
+                _audioMixer.SetFloat("MasterVolume", -50f + 5 * Options.masterVolume);
             }
             if(Options.musicVolume == 0)
             {
@@ -106,7 +106,7 @@ namespace BSA
             }
             else
             {
-                _audioMixer.SetFloat("MusicVolume", -40f + 5 * Options.musicVolume);
+                _audioMixer.SetFloat("MusicVolume", -50f + 5 * Options.musicVolume);
             }
             if(Options.sfxVolume == 0)
             {
@@ -114,7 +114,7 @@ namespace BSA
             }
             else
             {
-                _audioMixer.SetFloat("SfxVolume", -40f + 5 * Options.sfxVolume);
+                _audioMixer.SetFloat("SfxVolume", -50f + 5 * Options.sfxVolume);
             }
         }
 

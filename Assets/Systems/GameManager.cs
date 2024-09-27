@@ -32,6 +32,8 @@ namespace BSA
         [SerializeField] private PlayerInputManager _playerInputManager;
         [SerializeField] private BannerManager _bannerManager;
 
+        [SerializeField] private InputAction _backToMenu;
+
         private Transform[] _spawnPointsGame = new Transform[4];
         private int _consecutiveOrbAttacks = 1;
         private readonly List<PlayerMovement> _players = new();
@@ -76,6 +78,9 @@ namespace BSA
             _consecutiveOrbAttacks = _settings.StartAmountOfAttacks;
 
             SceneManager.activeSceneChanged += OnActiveSceneChanged;
+
+            _backToMenu.performed += OnBackToMenu;
+            _backToMenu.Enable();
         }
 
         private void OnActiveSceneChanged(Scene oldScene, Scene newScene)
@@ -105,6 +110,7 @@ namespace BSA
         {
             _playerInputManager.onPlayerJoined -= OnPlayerJoined;
             _playerInputManager.onPlayerLeft -= OnPlayerLeft;
+            _backToMenu.performed -= OnBackToMenu;
         }
 
         // --- Interface implementations ------------------------------------------------------------------------------
@@ -167,22 +173,12 @@ namespace BSA
             }
         }
 
-        public void OnBackToMainMenu(InputAction.CallbackContext context)
+        private void OnBackToMenu(InputAction.CallbackContext obj)
         {
-            if(context.performed == false)
+            if(State == GameState.Running)
                 return;
 
-            string _currentSceneName = SceneManager.GetActiveScene().name;
-            bool restartMusic = false;
-
-            if(_currentSceneName == "HomeScreen")
-                return;
-            else if(_currentSceneName == "ShockAbosorber")
-            {
-                restartMusic = true;
-            }
-
-            ReturnToMain(restartMusic);
+            ReturnToMain(State == GameState.Finished);
         }
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
@@ -365,7 +361,9 @@ namespace BSA
             MusicPlayer.Instance.SwitchMusic(MusicType.Win);
             UpdateCameras();
             winner.EndGame();
+            
             this.DoAfter(1.5f, () => TransitionHandler.ShowEndGamePrompts());
+            this.DoAfter(1.5f, () => TransitionHandler.ShowWinnerBanner());
             this.DoAfter(2.5f, () => _canRestart = true);
         }
         private IEnumerator MoveToGameScene()
