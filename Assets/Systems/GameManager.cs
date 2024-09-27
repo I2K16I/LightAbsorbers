@@ -114,6 +114,9 @@ namespace BSA
         {
             int index = _players.Count;
             PlayerMovement movement = player.GetComponent<PlayerMovement>();
+
+            if(movement == null)
+                return;
             //Debug.Log(string.Join("\n", Gamepad.all));
             //Debug.Log(Gamepad.current);
 
@@ -162,6 +165,24 @@ namespace BSA
                 case GameState.Finished:
                     break;
             }
+        }
+
+        public void OnBackToMainMenu(InputAction.CallbackContext context)
+        {
+            if(context.performed == false)
+                return;
+
+            string _currentSceneName = SceneManager.GetActiveScene().name;
+            bool restartMusic = false;
+
+            if(_currentSceneName == "HomeScreen")
+                return;
+            else if(_currentSceneName == "ShockAbosorber")
+            {
+                restartMusic = true;
+            }
+
+            ReturnToMain(restartMusic);
         }
 
         // --- Public/Internal Methods --------------------------------------------------------------------------------
@@ -344,6 +365,7 @@ namespace BSA
             MusicPlayer.Instance.SwitchMusic(MusicType.Win);
             UpdateCameras();
             winner.EndGame();
+            this.DoAfter(1.5f, () => TransitionHandler.ShowEndGamePrompts());
             this.DoAfter(2.5f, () => _canRestart = true);
         }
         private IEnumerator MoveToGameScene()

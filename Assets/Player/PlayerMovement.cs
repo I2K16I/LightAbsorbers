@@ -198,10 +198,6 @@ namespace BSA
                     Destroy(this.gameObject);
                 }
             }
-            else if(GameManager.Instance.State == GameState.Finished)
-            {
-                GameManager.Instance.ReturnToMain(true);
-            }
         }
 
         public void OnAbility(InputAction.CallbackContext context)
@@ -238,6 +234,10 @@ namespace BSA
             if(GameManager.Instance.State == GameState.Preparation)
             {
                 GameManager.Instance.ReturnToMain();
+            }
+            else if(GameManager.Instance.State == GameState.Finished)
+            {
+                GameManager.Instance.ReturnToMain(true);
             }
         }
 

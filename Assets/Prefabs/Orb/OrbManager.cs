@@ -82,7 +82,7 @@ namespace BSA
             {
                 _orbs[i].PauseMovement();
             }
-            StartCoroutine(DisableOrbsOverTime());
+            //StartCoroutine(DisableOrbsOverTime());
         }
         // --- Protected/Private Methods ------------------------------------------------------------------------------
         private IEnumerator DisableOrbsOverTime()

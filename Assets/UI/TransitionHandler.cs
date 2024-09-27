@@ -16,6 +16,7 @@ namespace BSA
         [SerializeField] private RectTransform _joinScreen;
         [SerializeField] private GameObject _deviceLostCanvas;
         [SerializeField] private TMP_Text _deviceLostText;
+        [SerializeField] private EndScreenPrompts _endScreenPrompts;
         // --- Properties ---------------------------------------------------------------------------------------------
 
         // --- Events -------------------------------------------------------------------------------------------------
@@ -59,6 +60,11 @@ namespace BSA
             _deviceLostCanvas.SetActive(true);
             int displayedDeviceNumber = deviceNumber + 1;
             _deviceLostText.text = "Controller " + displayedDeviceNumber + " disconnected!";
+        }
+
+        public void ShowEndGamePrompts()
+        {
+            _endScreenPrompts.SlideIn();
         }
 
         public void HideDeviceLostScreen()
