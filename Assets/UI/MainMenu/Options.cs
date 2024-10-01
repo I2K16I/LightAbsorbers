@@ -13,7 +13,7 @@ namespace BSA
 		public int masterVolume = 8;
 		public int musicVolume = 5;
 		public int sfxVolume = 8;
-		public int numberOfOrbs = 12;
+		public int numberOfOrbs = 11;
 		public bool useRumble = true;
 		public bool beamsReflectOrbs = true;
 		public bool bordersKillPlayers = true;
