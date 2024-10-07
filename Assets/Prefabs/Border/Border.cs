@@ -17,7 +17,7 @@ namespace BSA
 		// --- Unity Functions ----------------------------------------------------------------------------------------
 		private void Awake()
 		{
-            if (GameManager.Settings.BordersCanHitPlayer)
+            if (OptionsManager.Options.bordersKillPlayers)
             {
                 _playerCollider.isTrigger = true;
             } else
@@ -30,7 +30,7 @@ namespace BSA
         {
             if(collision.gameObject.TryGetComponent(out PlayerMovement player))
             {
-                if (GameManager.Settings.BordersCanHitPlayer)
+                if (OptionsManager.Options.bordersKillPlayers)
                 {
                     Debug.Log("Hit the player");
                     player.Hit();

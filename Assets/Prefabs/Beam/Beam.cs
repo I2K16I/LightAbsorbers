@@ -96,7 +96,7 @@ namespace BSA
             _collider.enabled = true;
             _indicator.material = _beamMaterial;
 
-            if(GameManager.Settings.ReflectingBeams)
+            if(OptionsManager.Options.beamsReflectOrbs)
             {
                 _reflectorCollider.enabled = true;
             }

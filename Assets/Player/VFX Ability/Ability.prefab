@@ -60,7 +60,7 @@ MonoBehaviour:
   _maxAttackAngle: 45
   _collisionLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 16640
   _testPlay: 0
   _abilitySound: {fileID: -1751762162324719086}
   _buildUpClip: {fileID: 8300000, guid: 4ed34a9ff2391344fa831950d163ccd6, type: 3}
